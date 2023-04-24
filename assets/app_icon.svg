@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 135.46666 135.46667"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="app_icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.99241021"
+     inkscape:cx="195.9875"
+     inkscape:cy="319.42436"
+     inkscape:window-width="2560"
+     inkscape:window-height="1323"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showguides="true"
+     inkscape:lockguides="false">
+    <sodipodi:guide
+       position="16.933333,135.46666"
+       orientation="-1,0"
+       id="guide2287"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="118.53333,135.46666"
+       orientation="-1,0"
+       id="guide2289"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="0,118.53333"
+       orientation="0,1"
+       id="guide2291"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="0,16.933333"
+       orientation="0,1"
+       id="guide2293"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path111"
+       style="stroke-width:0.215579"
+       d="m 33.828885,72.181294 c -7.573728,8.951185 -2.961662,18.873956 5.989514,26.447712 8.951164,7.574064 18.85214,9.930884 26.426021,0.979553 6.361344,-7.518714 2.961153,-13.036897 -2.897268,-20.953753 l 16.894611,-19.967264 5.625941,4.760198 2.765794,-3.268813 -5.625941,-4.760198 2.490409,-2.943358 8.002789,6.771287 2.773477,-3.277893 -8.002787,-6.771277 1.950001,-2.304657 10.315344,8.72797 2.77347,-3.277893 -10.315347,-8.727967 2.077177,-2.454963 7.60278,6.432818 2.77347,-3.277891 -7.602771,-6.432811 1.027406,-1.214271 -7.775958,-6.579351 -35.60559,42.081266 c -8.71346,-4.200767 -15.409338,-7.368706 -21.662542,0.01156 z m 4.982748,5.322748 c 6.034149,-7.131426 12.29395,-3.189081 18.614509,2.158766 6.32084,5.347818 10.308813,10.07638 4.27469,17.208118 C 55.666597,104.00284 49.146117,101.97544 42.82548,96.627108 36.504862,91.279069 32.77733,84.635588 38.811642,77.504039 Z"
+       sodipodi:nodetypes="ccccccccccccccccccccccccccccc" />
+  </g>
+  <metadata
+     id="metadata2315">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HW Key Info</string>
+    <string name="app_page_title_key_list">Security keys</string>
+    <string name="app_page_title_key_edit">Edit key information</string>
+    <string name="app_page_title_key_entry">Add new key</string>
+
+    <string name="app_page_title_service_list">Services</string>
+    <string name="app_page_title_service_edit">Edit service information</string>
+    <string name="app_page_title_service_entry">Add new service</string>
+    
+</resources>
