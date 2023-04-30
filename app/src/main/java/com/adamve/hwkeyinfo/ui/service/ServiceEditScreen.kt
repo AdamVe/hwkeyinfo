@@ -1,14 +1,13 @@
 package com.adamve.hwkeyinfo.ui.service
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.ui.AppDestination
@@ -28,24 +26,6 @@ object ServiceEditDestination : AppDestination {
     override val titleRes = R.string.app_page_title_service_edit
     const val serviceIdArg = "serviceId"
     val routeWithArgs = "$route/{$serviceIdArg}"
-}
-
-@Composable
-fun CustomTextField(
-    title: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    keyboardType: KeyboardType,
-    leadingIcon: @Composable (() -> Unit)? = {}
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = { onValueChange(it) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = true,
-        label = { Text(title) },
-        leadingIcon = leadingIcon
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +45,20 @@ fun ServiceEditScreen(
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
+                                viewModel.deleteService()
+                                navigateBack()
+                            }
+                        },
+                        enabled = viewModel.serviceUiState.isEntryValid
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(R.string.service_edit_screen_action_delete)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
                                 viewModel.updateService()
                                 navigateBack()
                             }
@@ -73,15 +67,15 @@ fun ServiceEditScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Check,
-                            contentDescription = "Update"
+                            contentDescription = stringResource(R.string.service_edit_screen_action_update)
                         )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.service_edit_screen_navigation_back)
                         )
                     }
                 }
@@ -92,13 +86,6 @@ fun ServiceEditScreen(
         ServiceEntryBody(
             serviceUiState = viewModel.serviceUiState,
             onServiceValueChange = viewModel::updateServiceUiState,
-            onDeleteClick = {
-                coroutineScope.launch {
-                    viewModel.deleteService()
-                    navigateBack()
-                }
-
-            },
             modifier = modifier.padding(innerPadding)
         )
 

@@ -1,8 +1,8 @@
 package com.adamve.hwkeyinfo.ui.security_key
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,13 +26,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
+import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
+import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 
 object SecurityKeyListDestination : AppDestination {
     override val route = "security_keys"
@@ -67,13 +69,23 @@ fun SecurityKeyListScreen(
                 NavigationBarItem(
                     selected = true,
                     onClick = { },
-                    label = { Text("Keys") },
-                    icon = { Icon(Icons.Default.Lock, "Keys") })
+                    label = { Text(stringResource(R.string.bottom_navigation_keys_label)) },
+                    icon = {
+                        Icon(
+                            Icons.Default.Lock,
+                            stringResource(R.string.bottom_navigation_keys_content_description)
+                        )
+                    })
                 NavigationBarItem(
                     selected = false,
                     onClick = navigateToServiceList,
-                    label = { Text("Services") },
-                    icon = { Icon(Icons.Default.List, "Services") })
+                    label = { Text(stringResource(R.string.bottom_navigation_services_label)) },
+                    icon = {
+                        Icon(
+                            Icons.Default.List,
+                            stringResource(R.string.bottom_navigation_services_content_description)
+                        )
+                    })
             }
 
         }
@@ -88,9 +100,9 @@ fun SecurityKeyListScreen(
 
 @Composable
 fun SecurityKeyListScreenBody(
-    itemList: List<SecurityKey>,
-    onItemClick: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    itemList: List<SecurityKeyWithServices>,
+    modifier: Modifier = Modifier,
+    onItemClick: (Long) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -100,32 +112,48 @@ fun SecurityKeyListScreenBody(
         LazyColumn(
             Modifier
                 .fillMaxWidth()
-                .padding(0.dp)
+                .padding(10.dp)
                 .weight(
-                    weight =
-                    1f, fill = false
+                    weight = 1f, fill = false
                 ),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(4.dp),
             state = listState
         ) {
-            items(itemList) { securityKey ->
-                SecurityKeyRow(securityKey, onClick = onItemClick)
+            items(itemList) {
+                SecurityKeyCard(
+                    it,
+                    onClick = onItemClick
+                )
             }
         }
     }
 }
 
+@Preview(showSystemUi = true, widthDp = 320)
 @Composable
-fun SecurityKeyRow(
-    securityKey: SecurityKey,
-    onClick: (Long) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)
-            .clickable { onClick(securityKey.id) },
-    ) {
-        Text(securityKey.name, modifier = Modifier.weight(0.2f), fontSize = 24.sp)
+fun SecurityKeyListPreview() {
+
+    val items = listOf(
+        SecurityKeyWithServices(
+            SecurityKey(name = "Main key", type = "HW Key Type 1"),
+            listOf()
+        ),
+        SecurityKeyWithServices(
+            SecurityKey(name = "Backup key", type = "HW Key Type 2"),
+            listOf()
+        ),
+        SecurityKeyWithServices(
+            SecurityKey(name = "Work key", type = "HW Key Type 1"),
+            listOf()
+        )
+
+    )
+
+    HwKeyInfoTheme {
+        SecurityKeyListScreenBody(
+            itemList = items
+        )
     }
 }
 

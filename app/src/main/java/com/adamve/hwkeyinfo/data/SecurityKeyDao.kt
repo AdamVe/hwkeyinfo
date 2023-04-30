@@ -40,4 +40,8 @@ interface SecurityKeyDao {
 
     @Update
     suspend fun updateService(service: Service)
+
+    // relations
+    @Query("SELECT * FROM security_keys")
+    fun getAllSecurityKeysWithServices(): Flow<List<SecurityKeyWithServices>>
 }

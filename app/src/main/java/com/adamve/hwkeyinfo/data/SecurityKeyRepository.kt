@@ -3,6 +3,9 @@ package com.adamve.hwkeyinfo.data
 import kotlinx.coroutines.flow.Flow
 
 class SecurityKeyRepository(private val securityKeyDao: SecurityKeyDao) {
+
+    fun getAllSecurityKeysWithServicesStream(): Flow<List<SecurityKeyWithServices>> = securityKeyDao.getAllSecurityKeysWithServices()
+
     fun getAllSecurityKeysStream(): Flow<List<SecurityKey>> = securityKeyDao.getAllSecurityKeys()
 
     fun getSecurityKeyStream(id: Long): Flow<SecurityKey?> = securityKeyDao.getSecurityKey(id)

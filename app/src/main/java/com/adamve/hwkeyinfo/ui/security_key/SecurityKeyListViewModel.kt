@@ -2,8 +2,8 @@ package com.adamve.hwkeyinfo.ui.security_key
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyRepository
+import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -13,7 +13,8 @@ class SecurityKeyListViewModel(
     securityKeyRepository: SecurityKeyRepository
 ) : ViewModel() {
     val securityKeyListUiState: StateFlow<SecurityKeyListUiState> =
-        securityKeyRepository.getAllSecurityKeysStream().map { SecurityKeyListUiState(it) }
+        securityKeyRepository.getAllSecurityKeysWithServicesStream()
+            .map { SecurityKeyListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -25,4 +26,4 @@ class SecurityKeyListViewModel(
     }
 }
 
-data class SecurityKeyListUiState(val itemList: List<SecurityKey> = listOf())
+data class SecurityKeyListUiState(val itemList: List<SecurityKeyWithServices> = listOf())

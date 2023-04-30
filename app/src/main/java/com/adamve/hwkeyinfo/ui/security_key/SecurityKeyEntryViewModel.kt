@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyRepository
+
 class SecurityKeyEntryViewModel(
     private val securityKeyRepository: SecurityKeyRepository
 ) : ViewModel() {
@@ -27,7 +28,7 @@ class SecurityKeyEntryViewModel(
 
     private fun validateInput(uiState: SecurityKeyDetails = securityKeyUiState.details): Boolean {
         return with(uiState) {
-            name.isNotBlank()
+            name.isNotBlank() or type.isNotBlank()
         }
     }
 }
@@ -40,12 +41,14 @@ data class SecurityKeyUiState(
 data class SecurityKeyDetails(
     val id: Long = 0L,
     val name: String = "",
+    val type: String = "",
     val description: String = ""
 )
 
 fun SecurityKeyDetails.toSecurityKey(): SecurityKey = SecurityKey(
     id = id,
     name = name,
+    type = type,
     description = description
 )
 
@@ -58,5 +61,6 @@ fun SecurityKey.toSecurityKeyUiState(isEntryValid: Boolean = false): SecurityKey
 fun SecurityKey.toSecurityKeyDetails(): SecurityKeyDetails = SecurityKeyDetails(
     id = id,
     name = name,
+    type = type,
     description = description
 )

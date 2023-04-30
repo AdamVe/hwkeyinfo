@@ -43,35 +43,33 @@ fun SecurityKeyEntryScreen(
                         onClick = {
                             coroutineScope.launch {
                                 viewModel.saveSecurityKey()
-                                navigateBack()
+                                onNavigateUp()
                             }
                         },
                         enabled = viewModel.securityKeyUiState.isEntryValid
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Check,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.security_key_entry_screen_action_create)
                         )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack /*{ navController.navigateUp() }*/) {
+                    IconButton(onClick = navigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.security_key_entry_screen_navigation_back)
                         )
                     }
                 }
             )
         },
     ) { innerPadding ->
-
         SecurityKeyEntryBody(
             securityKeyUiState = viewModel.securityKeyUiState,
             onSecurityKeyValueChange = viewModel::updateSecurityKeyUiState,
             modifier = modifier.padding(innerPadding)
         )
-
     }
 }
 

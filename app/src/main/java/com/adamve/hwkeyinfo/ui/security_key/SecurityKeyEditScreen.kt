@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,10 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
@@ -46,7 +44,8 @@ fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType,
-    leadingIcon: @Composable (() -> Unit)? = {}
+    modifier: Modifier = Modifier,
+    leadingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
@@ -54,7 +53,8 @@ fun CustomTextField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         singleLine = true,
         label = { Text(title) },
-        leadingIcon = leadingIcon
+        leadingIcon = leadingIcon,
+        modifier = modifier
     )
 }
 
@@ -75,6 +75,20 @@ fun SecurityKeyEditScreen(
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
+                                viewModel.deleteSecurityKey()
+                                navigateBack()
+                            }
+                        },
+                        enabled = viewModel.securityKeyUiState.isEntryValid
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(R.string.security_key_edit_screen_action_delete)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
                                 viewModel.updateSecurityKey()
                                 navigateBack()
                             }
@@ -83,76 +97,25 @@ fun SecurityKeyEditScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Check,
-                            contentDescription = "Update"
+                            contentDescription = stringResource(R.string.security_key_edit_screen_action_update)
                         )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.security_key_edit_screen_navigation_back)
                         )
                     }
                 }
             )
         },
     ) { innerPadding ->
-
         SecurityKeyEntryBody(
             securityKeyUiState = viewModel.securityKeyUiState,
             onSecurityKeyValueChange = viewModel::updateSecurityKeyUiState,
-            onDeleteClick = {
-                coroutineScope.launch {
-                    viewModel.deleteSecurityKey()
-                    navigateBack()
-                }
-
-            },
             modifier = modifier.padding(innerPadding)
-        )
-
-    }
-}
-
-@Composable
-fun SecurityKeyInputForm(
-    securityKeyDetails: SecurityKeyDetails,
-    modifier: Modifier = Modifier,
-    onValueChange: (SecurityKeyDetails) -> Unit,
-    enabled: Boolean = true
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Row {
-            CustomTextField(
-                title = "Security Key Name",
-                value = securityKeyDetails.name,
-                onValueChange = { onValueChange(securityKeyDetails.copy(name = it)) },
-                keyboardType = KeyboardType.Text,
-                leadingIcon = { Icon(Icons.Filled.Favorite, "") }
-            )
-
-            IconButton(
-                onClick = {},
-                modifier = Modifier
-                    .clip(RoundedCornerShape(size = 10.dp)),
-
-                ) {
-
-                Icon(Icons.Filled.Add, "")
-
-            }
-        }
-
-        CustomTextField(
-            title = "Description",
-            value = securityKeyDetails.description,
-            onValueChange = { onValueChange(securityKeyDetails.copy(description = it)) },
-            keyboardType = KeyboardType.Text
         )
     }
 }
@@ -161,23 +124,68 @@ fun SecurityKeyInputForm(
 fun SecurityKeyEntryBody(
     securityKeyUiState: SecurityKeyUiState,
     onSecurityKeyValueChange: (SecurityKeyDetails) -> Unit,
-    modifier: Modifier = Modifier,
-    onDeleteClick: (() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         SecurityKeyInputForm(
             securityKeyDetails = securityKeyUiState.details,
             onValueChange = onSecurityKeyValueChange
         )
-        Row {
-            onDeleteClick?.let {
-                Button(
-                    onClick = it,
-                    enabled = securityKeyUiState.isEntryValid,
-                ) {
-                    Text("Delete")
-                }
-            }
-        }
     }
+}
+
+@Composable
+fun SecurityKeyInputForm(
+    securityKeyDetails: SecurityKeyDetails,
+    modifier: Modifier = Modifier,
+    onValueChange: (SecurityKeyDetails) -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Column {
+            Text(text = stringResource(R.string.security_key_input_form_information_header))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                CustomTextField(
+                    title = stringResource(R.string.security_key_input_form_key_title),
+                    value = securityKeyDetails.name,
+                    onValueChange = { onValueChange(securityKeyDetails.copy(name = it)) },
+                    keyboardType = KeyboardType.Text,
+                    modifier = Modifier.weight(2f)
+                )
+            }
+
+            CustomTextField(
+                title = stringResource(R.string.security_key_input_form_key_model_title),
+                value = securityKeyDetails.type,
+                onValueChange = { onValueChange(securityKeyDetails.copy(type = it)) },
+                keyboardType = KeyboardType.Text,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            CustomTextField(
+                title = stringResource(R.string.security_key_input_form_key_description_title),
+                value = securityKeyDetails.description,
+                onValueChange = { onValueChange(securityKeyDetails.copy(description = it)) },
+                keyboardType = KeyboardType.Text,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Text(text = stringResource(R.string.security_key_input_form_services_header))
+    }
+}
+
+@Preview
+@Composable
+fun InputFormPreview() {
+    SecurityKeyInputForm(
+        securityKeyDetails = SecurityKeyDetails(), onValueChange = {})
 }
