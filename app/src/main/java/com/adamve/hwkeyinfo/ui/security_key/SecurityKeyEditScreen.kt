@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -42,6 +44,8 @@ object SecurityKeyEditDestination : AppDestination {
     override val titleRes = R.string.app_page_title_key_edit
     const val securityKeyIdArg = "securityKeyId"
     val routeWithArgs = "$route/{$securityKeyIdArg}"
+    const val addKeyRoute = "security_key_add"
+    val titleResAddKey = R.string.app_page_title_key_add
 }
 
 @Composable
@@ -73,38 +77,68 @@ fun SecurityKeyEditScreen(
     viewModel: SecurityKeyEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = SecurityKeyEditDestination.titleRes)) },
+                title = {
+                    Text(
+                        stringResource(
+                            id = if (viewModel.securityKeyUiState.isAddingNew) {
+                                SecurityKeyEditDestination.titleResAddKey
+                            } else {
+                                SecurityKeyEditDestination.titleRes
+                            }
+                        )
+                    )
+                },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModel.deleteSecurityKey()
-                                navigateBack()
-                            }
-                        },
-                        enabled = viewModel.securityKeyUiState.isEntryValid
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = stringResource(R.string.security_key_edit_screen_action_delete)
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModel.updateSecurityKey()
-                                navigateBack()
-                            }
-                        },
-                        enabled = viewModel.securityKeyUiState.isEntryValid
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = stringResource(R.string.security_key_edit_screen_action_update)
-                        )
+                    if (viewModel.securityKeyUiState.isAddingNew) {
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    viewModel.createSecurityKey()
+                                    onNavigateUp()
+                                }
+                            },
+                            enabled = viewModel.securityKeyUiState.isEntryValid
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = stringResource(R.string.security_key_edit_screen_action_add)
+                            )
+                        }
+                    } else { // edit
+
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    viewModel.deleteSecurityKey()
+                                    navigateBack()
+                                }
+                            },
+                            enabled = viewModel.securityKeyUiState.isEntryValid
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = stringResource(R.string.security_key_edit_screen_action_delete)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    viewModel.updateSecurityKey()
+                                    navigateBack()
+                                }
+                            },
+                            enabled = viewModel.securityKeyUiState.isEntryValid
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = stringResource(R.string.security_key_edit_screen_action_update)
+                            )
+                        }
                     }
                 },
                 navigationIcon = {
@@ -124,7 +158,12 @@ fun SecurityKeyEditScreen(
         SecurityKeyEntryBody(
             securityKeyUiState = viewModel.securityKeyUiState,
             serviceListUiState = allServices,
-            onSecurityKeyValueChange = viewModel::updateSecurityKeyUiState,
+            onSecurityKeyValueChange = {
+                viewModel.updateSecurityKeyUiState(
+                    details = it,
+                    isAddingNew = viewModel.securityKeyUiState.isAddingNew
+                )
+            },
             modifier = modifier.padding(innerPadding)
         )
     }
@@ -157,11 +196,12 @@ fun SecurityKeyInputForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column {
-            Text(text = stringResource(R.string.security_key_input_form_information_header))
+            Text(text = stringResource(R.string.security_key_input_form_information_header) + "(key id: ${securityKeyDetails.id})")
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -230,13 +270,21 @@ fun InputFormPreview() {
                 KeyServiceDetails(serviceId = 3, usedByKey = false),
                 KeyServiceDetails(serviceId = 4, usedByKey = false),
                 KeyServiceDetails(serviceId = 5, usedByKey = false),
-                )
+            )
         ),
         serviceListUiState = ServiceListUiState(
             listOf(
-                Service(serviceId = 1, serviceName = "Email service 1", serviceUser = "user@email1.com"),
+                Service(
+                    serviceId = 1,
+                    serviceName = "Email service 1",
+                    serviceUser = "user@email1.com"
+                ),
                 Service(serviceId = 2, serviceName = "Email 2", serviceUser = "user@email2.com"),
-                Service(serviceId = 3, serviceName = "Local login / TOTP", serviceUser = "Something"),
+                Service(
+                    serviceId = 3,
+                    serviceName = "Local login / TOTP",
+                    serviceUser = "Something"
+                ),
                 Service(serviceId = 4, serviceName = "Not enabled service", serviceUser = "user"),
                 Service(serviceId = 5, serviceName = "Not enabled service", serviceUser = "user"),
             )

@@ -9,8 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditScreen
-import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEntryDestination
-import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEntryScreen
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListScreen
 import com.adamve.hwkeyinfo.ui.service.ServiceEditDestination
@@ -36,7 +34,7 @@ fun HwKeyInfoNavHost(
     NavHost(navController = navController, startDestination = SecurityKeyListDestination.route) {
         composable(route = SecurityKeyListDestination.route) {
             SecurityKeyListScreen(
-                navigateToItemEntry = { navController.navigate(SecurityKeyEntryDestination.route) },
+                navigateToItemEntry = { navController.navigate(SecurityKeyEditDestination.addKeyRoute) },
                 navigateToItemUpdate = { navController.navigate("${SecurityKeyEditDestination.route}/$it") },
                 navigateToServiceList = { navController.navigate(ServiceListDestination.route) }
             )
@@ -55,10 +53,11 @@ fun HwKeyInfoNavHost(
             )
         }
 
-        composable(SecurityKeyEntryDestination.route) {
-            SecurityKeyEntryScreen(
+        composable(SecurityKeyEditDestination.addKeyRoute) {
+            SecurityKeyEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() }
+            )
         }
 
         // Service

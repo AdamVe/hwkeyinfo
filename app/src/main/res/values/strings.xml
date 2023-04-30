@@ -2,31 +2,35 @@
     <string name="app_name">HW Key Info</string>
     <string name="app_page_title_key_list">Security keys</string>
     <string name="app_page_title_key_edit">Edit key information</string>
-    <string name="app_page_title_key_entry">Add new key</string>
+    <string name="app_page_title_key_add">Add new key</string>
 
     <string name="app_page_title_service_list">Services</string>
     <string name="app_page_title_service_edit">Edit service information</string>
     <string name="app_page_title_service_entry">Add new service</string>
+
     <string name="security_key_input_form_key_title">Security Key Name</string>
     <string name="security_key_input_form_information_header">Information</string>
     <string name="security_key_input_form_key_model_title">Model</string>
     <string name="security_key_input_form_key_description_title">Description</string>
     <string name="security_key_input_form_services_header">Services</string>
+
     <string name="security_key_edit_screen_action_delete">Delete</string>
     <string name="security_key_edit_screen_action_update">Update</string>
     <string name="security_key_edit_screen_navigation_back">Back</string>
-    <string name="security_key_entry_screen_action_create">Create</string>
-    <string name="security_key_entry_screen_navigation_back">Back</string>
+    <string name="security_key_edit_screen_action_add">Create</string>
+
     <string name="service_edit_screen_action_update">Update</string>
     <string name="service_edit_screen_navigation_back">Back</string>
     <string name="service_edit_screen_action_delete">Delete</string>
+
     <string name="service_entry_screen_action_create">Create</string>
     <string name="service_entry_screen_navigation_back">Back</string>
+
     <string name="service_input_form_name_title">Service Name</string>
     <string name="service_input_form_account_title">User/Account</string>
+
     <string name="bottom_navigation_keys_label">Keys</string>
     <string name="bottom_navigation_services_label">Services</string>
     <string name="bottom_navigation_keys_content_description">Keys</string>
     <string name="bottom_navigation_services_content_description">Services</string>
-
 </resources>

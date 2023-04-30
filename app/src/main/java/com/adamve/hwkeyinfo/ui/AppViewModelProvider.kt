@@ -7,7 +7,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.adamve.hwkeyinfo.HwKeyInfoApplication
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditViewModel
-import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEntryViewModel
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListViewModel
 import com.adamve.hwkeyinfo.ui.service.ServiceEditViewModel
 import com.adamve.hwkeyinfo.ui.service.ServiceEntryViewModel
@@ -20,10 +19,6 @@ object AppViewModelProvider {
                 this.createSavedStateHandle(),
                 hwKeyInfoApplication().container.securityKeyRepository
             )
-        }
-
-        initializer {
-            SecurityKeyEntryViewModel(hwKeyInfoApplication().container.securityKeyRepository)
         }
 
         initializer {
