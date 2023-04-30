@@ -67,6 +67,7 @@ fun SecurityKeyEntryScreen(
     ) { innerPadding ->
         SecurityKeyEntryBody(
             securityKeyUiState = viewModel.securityKeyUiState,
+            serviceListUiState = viewModel.serviceListUiState,
             onSecurityKeyValueChange = viewModel::updateSecurityKeyUiState,
             modifier = modifier.padding(innerPadding)
         )

@@ -7,8 +7,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adamve.hwkeyinfo.data.SecurityKeyRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SecurityKeyEditViewModel(
@@ -17,6 +21,15 @@ class SecurityKeyEditViewModel(
 ) : ViewModel() {
     var securityKeyUiState by mutableStateOf(SecurityKeyUiState())
         private set
+
+    val serviceListUiState: StateFlow<ServiceListUiState> =
+        securityKeyRepository.getAllServicesStream()
+            .map { ServiceListUiState(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = ServiceListUiState()
+            )
 
     private val securityKeyId: Long =
         checkNotNull(savedStateHandle[SecurityKeyEditDestination.securityKeyIdArg])
@@ -50,5 +63,9 @@ class SecurityKeyEditViewModel(
         return with(uiState) {
             name.isNotBlank()
         }
+    }
+
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
     }
 }

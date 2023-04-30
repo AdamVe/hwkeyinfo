@@ -2,6 +2,8 @@ package com.adamve.hwkeyinfo.ui.security_key
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -18,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
+import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
@@ -112,8 +118,12 @@ fun SecurityKeyEditScreen(
             )
         },
     ) { innerPadding ->
+
+        val allServices by viewModel.serviceListUiState.collectAsState()
+
         SecurityKeyEntryBody(
             securityKeyUiState = viewModel.securityKeyUiState,
+            serviceListUiState = allServices,
             onSecurityKeyValueChange = viewModel::updateSecurityKeyUiState,
             modifier = modifier.padding(innerPadding)
         )
@@ -123,20 +133,24 @@ fun SecurityKeyEditScreen(
 @Composable
 fun SecurityKeyEntryBody(
     securityKeyUiState: SecurityKeyUiState,
+    serviceListUiState: ServiceListUiState,
     onSecurityKeyValueChange: (SecurityKeyDetails) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         SecurityKeyInputForm(
             securityKeyDetails = securityKeyUiState.details,
+            serviceListUiState = serviceListUiState,
             onValueChange = onSecurityKeyValueChange
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SecurityKeyInputForm(
     securityKeyDetails: SecurityKeyDetails,
+    serviceListUiState: ServiceListUiState,
     modifier: Modifier = Modifier,
     onValueChange: (SecurityKeyDetails) -> Unit
 ) {
@@ -180,6 +194,28 @@ fun SecurityKeyInputForm(
             )
         }
         Text(text = stringResource(R.string.security_key_input_form_services_header))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            serviceListUiState.allServices.forEach { service ->
+                FilterChip(
+                    modifier = Modifier.padding(horizontal = 0.dp, vertical = 4.dp),
+                    selected = securityKeyDetails.services.any {
+                        (it.serviceId == service.serviceId) and (it.usedByKey)
+                    },
+                    onClick = {},
+                    label = {
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp),
+                        ) {
+                            Text(service.serviceName)
+                            Text(service.serviceUser)
+                        }
+                    })
+            }
+        }
     }
 }
 
@@ -187,5 +223,23 @@ fun SecurityKeyInputForm(
 @Composable
 fun InputFormPreview() {
     SecurityKeyInputForm(
-        securityKeyDetails = SecurityKeyDetails(), onValueChange = {})
+        securityKeyDetails = SecurityKeyDetails(
+            services = listOf(
+                KeyServiceDetails(serviceId = 1, usedByKey = true),
+                KeyServiceDetails(serviceId = 2, usedByKey = false),
+                KeyServiceDetails(serviceId = 3, usedByKey = false),
+                KeyServiceDetails(serviceId = 4, usedByKey = false),
+                KeyServiceDetails(serviceId = 5, usedByKey = false),
+                )
+        ),
+        serviceListUiState = ServiceListUiState(
+            listOf(
+                Service(serviceId = 1, serviceName = "Email service 1", serviceUser = "user@email1.com"),
+                Service(serviceId = 2, serviceName = "Email 2", serviceUser = "user@email2.com"),
+                Service(serviceId = 3, serviceName = "Local login / TOTP", serviceUser = "Something"),
+                Service(serviceId = 4, serviceName = "Not enabled service", serviceUser = "user"),
+                Service(serviceId = 5, serviceName = "Not enabled service", serviceUser = "user"),
+            )
+        ),
+        onValueChange = {})
 }
