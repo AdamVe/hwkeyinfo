@@ -79,7 +79,7 @@ class SecurityKeyEditViewModel(
 
     private fun validateInput(uiState: SecurityKeyDetails = securityKeyUiState.details): Boolean {
         return with(uiState) {
-            name.isNotBlank()
+            name.isNotBlank() or type.isNotBlank()
         }
     }
 

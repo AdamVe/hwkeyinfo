@@ -39,7 +39,6 @@ import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
-import java.util.Collections
 
 object SecurityKeyEditDestination : AppDestination {
     override val route = "security_key_edit"
@@ -111,7 +110,6 @@ fun SecurityKeyEditScreen(
                             )
                         }
                     } else { // edit
-
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
@@ -126,7 +124,6 @@ fun SecurityKeyEditScreen(
                                 contentDescription = stringResource(R.string.security_key_edit_screen_action_delete)
                             )
                         }
-
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
@@ -198,7 +195,7 @@ fun SecurityKeyInputForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 8.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -274,7 +271,7 @@ fun SecurityKeyInputForm(
 fun InputFormPreview() {
     SecurityKeyInputForm(
         securityKeyDetails = SecurityKeyDetails(
-            services = listOf(1,2,4,5)
+            services = listOf(1, 2, 4, 5)
         ),
         serviceListUiState = ServiceListUiState(
             listOf(

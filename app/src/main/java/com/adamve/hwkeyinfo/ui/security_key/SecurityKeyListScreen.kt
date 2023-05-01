@@ -111,11 +111,7 @@ fun SecurityKeyListScreenBody(
     ) {
         LazyColumn(
             Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .weight(
-                    weight = 1f, fill = false
-                ),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(4.dp),
             state = listState
