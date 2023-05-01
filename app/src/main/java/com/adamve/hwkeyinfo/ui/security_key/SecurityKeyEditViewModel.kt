@@ -40,7 +40,7 @@ class SecurityKeyEditViewModel(
     init {
         viewModelScope.launch {
             if (securityKeyId != null) {
-                securityKeyUiState = securityKeyRepository.getSecurityKeyStream(securityKeyId)
+                securityKeyUiState = securityKeyRepository.getSecurityKeyWithServicesStream(securityKeyId)
                     .filterNotNull()
                     .first()
                     .toSecurityKeyUiState(true)
@@ -57,14 +57,14 @@ class SecurityKeyEditViewModel(
     suspend fun createSecurityKey() {
         if (validateInput()) {
             val securityKey = securityKeyUiState.details.toSecurityKey()
-            securityKeyRepository.insertSecurityKey(securityKey)
+            securityKeyRepository.insertSecurityKey(securityKey, securityKeyUiState.details.services)
         }
     }
 
     suspend fun updateSecurityKey() {
         if (validateInput(securityKeyUiState.details)) {
             val securityKey = securityKeyUiState.details.toSecurityKey()
-            securityKeyRepository.updateSecurityKey(securityKey)
+            securityKeyRepository.updateSecurityKey(securityKey, securityKeyUiState.details.services)
         }
     }
 
@@ -98,19 +98,12 @@ data class SecurityKeyUiState(
     val isEntryValid: Boolean = false
 )
 
-data class KeyServiceDetails(
-    val serviceId: Long = 0L,
-    val serviceName: String = "",
-    val serviceUser: String = "",
-    val usedByKey: Boolean = false,
-)
-
 data class SecurityKeyDetails(
     val id: Long = 0L,
     val name: String = "",
     val type: String = "",
     val description: String = "",
-    val services: List<KeyServiceDetails> = listOf()
+    val services: List<Long> = listOf()
 )
 
 fun SecurityKeyDetails.toSecurityKey(): SecurityKey = SecurityKey(
@@ -120,34 +113,16 @@ fun SecurityKeyDetails.toSecurityKey(): SecurityKey = SecurityKey(
     description = description
 )
 
-fun SecurityKeyDetails.toSecurityKeyWithServices(): SecurityKeyWithServices =
-    SecurityKeyWithServices(
-        SecurityKey(
-            id = id,
-            name = name,
-            type = type,
-            description = description
-        ),
-        services = services
-            .filter { it.usedByKey }
-            .map {
-                Service(
-                    serviceId = it.serviceId,
-                    serviceName = it.serviceName,
-                    serviceUser = it.serviceUser
-                )
-            }
-    )
-
-fun SecurityKey.toSecurityKeyUiState(isEntryValid: Boolean = false): SecurityKeyUiState =
+fun SecurityKeyWithServices.toSecurityKeyUiState(isEntryValid: Boolean = false): SecurityKeyUiState =
     SecurityKeyUiState(
         details = this.toSecurityKeyDetails(),
         isEntryValid = isEntryValid
     )
 
-fun SecurityKey.toSecurityKeyDetails(): SecurityKeyDetails = SecurityKeyDetails(
-    id = id,
-    name = name,
-    type = type,
-    description = description
+fun SecurityKeyWithServices.toSecurityKeyDetails(): SecurityKeyDetails = SecurityKeyDetails(
+    id = securityKey.id,
+    name = securityKey.name,
+    type = securityKey.type,
+    description = securityKey.description,
+    services = services.map { it.serviceId }
 )

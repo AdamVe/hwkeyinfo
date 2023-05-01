@@ -4,20 +4,14 @@ import kotlinx.coroutines.flow.Flow
 
 class SecurityKeyRepository(private val securityKeyDao: SecurityKeyDao) {
 
-    fun getAllSecurityKeysWithServicesStream(): Flow<List<SecurityKeyWithServices>> = securityKeyDao.getAllSecurityKeysWithServices()
+    fun getAllSecurityKeysWithServicesStream(): Flow<List<SecurityKeyWithServices>> =
+        securityKeyDao.getAllSecurityKeysWithServices()
 
-    fun getAllSecurityKeysStream(): Flow<List<SecurityKey>> = securityKeyDao.getAllSecurityKeys()
-
-    fun getSecurityKeyStream(id: Long): Flow<SecurityKey?> = securityKeyDao.getSecurityKey(id)
-
-    suspend fun insertSecurityKey(newSecurityKey: SecurityKey) =
-        securityKeyDao.insertSecurityKey(newSecurityKey)
+    fun getSecurityKeyWithServicesStream(id: Long): Flow<SecurityKeyWithServices?> =
+        securityKeyDao.getSecurityKeyWithServices(id)
 
     suspend fun deleteSecurityKey(securityKey: SecurityKey) =
         securityKeyDao.deleteSecurityKey(securityKey)
-
-    suspend fun updateSecurityKey(securityKey: SecurityKey) =
-        securityKeyDao.updateSecurityKey(securityKey)
 
     // Service
     fun getAllServicesStream(): Flow<List<Service>> = securityKeyDao.getAllServices()
@@ -29,4 +23,11 @@ class SecurityKeyRepository(private val securityKeyDao: SecurityKeyDao) {
     suspend fun deleteService(service: Service) = securityKeyDao.deleteService(service)
 
     suspend fun updateService(service: Service) = securityKeyDao.updateService(service)
+
+    // relations
+    suspend fun insertSecurityKey(newSecurityKey: SecurityKey, services: List<Long>) =
+        securityKeyDao.insertSecurityKey(newSecurityKey, services)
+
+    suspend fun updateSecurityKey(securityKey: SecurityKey, services: List<Long>) =
+        securityKeyDao.updateSecurityKey(securityKey, services)
 }

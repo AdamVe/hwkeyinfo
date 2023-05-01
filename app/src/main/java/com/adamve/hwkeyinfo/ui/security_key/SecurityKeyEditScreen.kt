@@ -32,12 +32,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 object SecurityKeyEditDestination : AppDestination {
     override val route = "security_key_edit"
@@ -241,17 +243,25 @@ fun SecurityKeyInputForm(
             serviceListUiState.allServices.forEach { service ->
                 FilterChip(
                     modifier = Modifier.padding(horizontal = 0.dp, vertical = 4.dp),
-                    selected = securityKeyDetails.services.any {
-                        (it.serviceId == service.serviceId) and (it.usedByKey)
+                    selected = securityKeyDetails.services.contains(service.serviceId),
+                    onClick = {
+                        onValueChange(
+                            securityKeyDetails.copy(
+                                services = if (securityKeyDetails.services.contains(service.serviceId)) {
+                                    securityKeyDetails.services.minus(service.serviceId)
+                                } else {
+                                    securityKeyDetails.services.plus(service.serviceId)
+                                }
+                            )
+                        )
                     },
-                    onClick = {},
                     label = {
                         Column(
                             modifier = Modifier
                                 .padding(vertical = 8.dp),
                         ) {
-                            Text(service.serviceName)
-                            Text(service.serviceUser)
+                            Text(service.serviceName, fontSize = 12.sp)
+                            Text(service.serviceUser, fontSize = 10.sp)
                         }
                     })
             }
@@ -264,13 +274,7 @@ fun SecurityKeyInputForm(
 fun InputFormPreview() {
     SecurityKeyInputForm(
         securityKeyDetails = SecurityKeyDetails(
-            services = listOf(
-                KeyServiceDetails(serviceId = 1, usedByKey = true),
-                KeyServiceDetails(serviceId = 2, usedByKey = false),
-                KeyServiceDetails(serviceId = 3, usedByKey = false),
-                KeyServiceDetails(serviceId = 4, usedByKey = false),
-                KeyServiceDetails(serviceId = 5, usedByKey = false),
-            )
+            services = listOf(1,2,4,5)
         ),
         serviceListUiState = ServiceListUiState(
             listOf(
