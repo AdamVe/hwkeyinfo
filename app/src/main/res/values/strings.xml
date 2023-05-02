@@ -6,7 +6,7 @@
 
     <string name="app_page_title_service_list">Services</string>
     <string name="app_page_title_service_edit">Edit service information</string>
-    <string name="app_page_title_service_entry">Add new service</string>
+    <string name="app_page_title_service_add">Add new service</string>
 
     <string name="security_key_input_form_key_title">Security Key Name</string>
     <string name="security_key_input_form_information_header">Information</string>
@@ -22,9 +22,7 @@
     <string name="service_edit_screen_action_update">Update</string>
     <string name="service_edit_screen_navigation_back">Back</string>
     <string name="service_edit_screen_action_delete">Delete</string>
-
-    <string name="service_entry_screen_action_create">Create</string>
-    <string name="service_entry_screen_navigation_back">Back</string>
+    <string name="service_edit_screen_action_create">Create</string>
 
     <string name="service_input_form_name_title">Service Name</string>
     <string name="service_input_form_account_title">User/Account</string>

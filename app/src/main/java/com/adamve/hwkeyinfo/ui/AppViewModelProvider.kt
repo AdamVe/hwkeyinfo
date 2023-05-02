@@ -9,7 +9,6 @@ import com.adamve.hwkeyinfo.HwKeyInfoApplication
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditViewModel
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListViewModel
 import com.adamve.hwkeyinfo.ui.service.ServiceEditViewModel
-import com.adamve.hwkeyinfo.ui.service.ServiceEntryViewModel
 import com.adamve.hwkeyinfo.ui.service.ServiceListViewModel
 
 object AppViewModelProvider {
@@ -27,10 +26,6 @@ object AppViewModelProvider {
 
         initializer {
             ServiceListViewModel(hwKeyInfoApplication().container.securityKeyRepository)
-        }
-
-        initializer {
-            ServiceEntryViewModel(hwKeyInfoApplication().container.securityKeyRepository)
         }
 
         initializer {

@@ -13,8 +13,6 @@ import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListScreen
 import com.adamve.hwkeyinfo.ui.service.ServiceEditDestination
 import com.adamve.hwkeyinfo.ui.service.ServiceEditScreen
-import com.adamve.hwkeyinfo.ui.service.ServiceEntryDestination
-import com.adamve.hwkeyinfo.ui.service.ServiceEntryScreen
 import com.adamve.hwkeyinfo.ui.service.ServiceListDestination
 import com.adamve.hwkeyinfo.ui.service.ServiceListScreen
 
@@ -63,14 +61,14 @@ fun HwKeyInfoNavHost(
         // Service
         composable(route = ServiceListDestination.route) {
             ServiceListScreen(
-                navigateToItemEntry = { navController.navigate(ServiceEntryDestination.route) },
+                navigateToItemEntry = { navController.navigate(ServiceEditDestination.addServiceRoute) },
                 navigateToItemUpdate = { navController.navigate("${ServiceEditDestination.route}/$it") },
                 navigateToSecurityKeyList = { navController.navigate(SecurityKeyListDestination.route) }
             )
         }
 
-        composable(ServiceEntryDestination.route) {
-            ServiceEntryScreen(
+        composable(ServiceEditDestination.addServiceRoute) {
+            ServiceEditScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() })
         }

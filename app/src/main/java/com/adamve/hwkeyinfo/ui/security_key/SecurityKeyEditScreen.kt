@@ -46,7 +46,7 @@ object SecurityKeyEditDestination : AppDestination {
     const val securityKeyIdArg = "securityKeyId"
     val routeWithArgs = "$route/{$securityKeyIdArg}"
     const val addKeyRoute = "security_key_add"
-    val titleResAddKey = R.string.app_page_title_key_add
+    val addKeyTitleRes = R.string.app_page_title_key_add
 }
 
 @Composable
@@ -86,7 +86,7 @@ fun SecurityKeyEditScreen(
                     Text(
                         stringResource(
                             id = if (viewModel.securityKeyUiState.isAddingNew) {
-                                SecurityKeyEditDestination.titleResAddKey
+                                SecurityKeyEditDestination.addKeyTitleRes
                             } else {
                                 SecurityKeyEditDestination.titleRes
                             }
