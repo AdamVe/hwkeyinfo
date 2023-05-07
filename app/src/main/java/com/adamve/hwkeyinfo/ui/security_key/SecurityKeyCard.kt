@@ -1,6 +1,8 @@
 package com.adamve.hwkeyinfo.ui.security_key
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,10 +11,14 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +36,7 @@ import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
 import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
+import com.adamve.hwkeyinfo.ui.theme.SecurityKeyBackground
 
 @Composable
 fun ServiceTag(
@@ -37,11 +44,15 @@ fun ServiceTag(
 ) {
     Column(
         modifier = Modifier
-            .padding(bottom = 4.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color.Cyan)
+            .padding(bottom = 2.dp)
+            .clip(RoundedCornerShape(3.dp))
+            .padding(horizontal = 1.dp)
+            .border(
+                border = BorderStroke(0.1.dp, color = Color.Black),
+                shape = RoundedCornerShape(corner = CornerSize(3.dp))
+            )
             .padding(2.dp)
-            .width(80.dp)
+            .widthIn(max = 100.dp)
     ) {
         Text(
             service.serviceName,
@@ -54,6 +65,11 @@ fun ServiceTag(
     }
 }
 
+@Composable
+fun KeyIdentifier(identifier: String, modifier: Modifier = Modifier) {
+    Text(identifier, modifier = modifier, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SecurityKeyCard(
@@ -64,24 +80,33 @@ fun SecurityKeyCard(
     val securityKey = securityKeyWithServices.securityKey
     Column(
         modifier = modifier
-            .height(IntrinsicSize.Min)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .defaultMinSize(minHeight = 80.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
             .clickable { onClick(securityKey.id) }
-            .background(Color.LightGray)
-            .padding(8.dp),
+            .clip(RoundedCornerShape(corner = CornerSize(8.dp)))
+            .background(color = SecurityKeyBackground)
+//            .border(
+//                border = BorderStroke(0.5.dp, color = Color.Black),
+//                shape = RoundedCornerShape(corner = CornerSize(4.dp))
+//            )
+            .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Row(
             verticalAlignment = Alignment.Bottom
         ) {
             if (securityKey.name.isNotBlank() && securityKey.type.isNotBlank()) {
-                Text(securityKey.name, modifier = Modifier.alignByBaseline(), fontSize = 18.sp)
-                Text(" / ", modifier = Modifier.alignByBaseline(), fontSize = 14.sp)
-                Text(securityKey.type, modifier = Modifier.alignByBaseline(), fontSize = 14.sp)
+                KeyIdentifier(securityKey.name, Modifier.alignByBaseline())
+                //Text(" / ", modifier = Modifier.alignByBaseline(), fontSize = 14.sp)
+                Text(
+                    " " + securityKey.type,
+                    modifier = Modifier.alignByBaseline(),
+                    fontSize = 12.sp
+                )
             } else if (securityKey.name.isNotBlank()) {
-                Text(securityKey.name, fontSize = 18.sp)
+                KeyIdentifier(securityKey.name)
             } else {
-                Text(securityKey.type, fontSize = 18.sp)
+                KeyIdentifier(securityKey.type)
             }
         }
 
@@ -93,19 +118,28 @@ fun SecurityKeyCard(
             )
         }
 
-        Text(
-            "Services: ${securityKeyWithServices.services.size}",
-            fontSize = 12.sp,
-            modifier = Modifier.padding(top = 4.dp)
-        )
+        if (securityKeyWithServices.services.isNotEmpty()) {
+            Text(
+                "Services: ${securityKeyWithServices.services.size}",
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+            )
 
-        FlowRow(
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            securityKeyWithServices.services.forEach {
-                ServiceTag(it)
+            FlowRow(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                securityKeyWithServices.services.forEach {
+                    ServiceTag(it)
+                }
             }
+        } else {
+            Text(
+                "No services",
+                fontSize = 12.sp,
+                fontStyle = FontStyle.Italic,
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+            )
         }
     }
 }
@@ -139,7 +173,7 @@ fun SecurityKeyWithoutNameCardPreview() {
 
 }
 
-@Preview(showBackground = true, widthDp = 320)
+@Preview(showBackground = true, widthDp = 320, showSystemUi = true)
 @Composable
 fun SecurityKeyWithoutDescriptionPreview() {
     val key = SecurityKey(0, "Key name", "Key nickname", "", "ref", "")
