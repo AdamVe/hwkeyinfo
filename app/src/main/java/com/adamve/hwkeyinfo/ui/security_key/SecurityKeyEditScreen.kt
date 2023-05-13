@@ -38,6 +38,7 @@ import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
+import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 import kotlinx.coroutines.launch
 
 object SecurityKeyEditDestination : AppDestination {
@@ -69,7 +70,6 @@ fun CustomTextField(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityKeyEditScreen(
     navigateBack: () -> Unit,
@@ -78,14 +78,59 @@ fun SecurityKeyEditScreen(
     viewModel: SecurityKeyEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val serviceListUiState by viewModel.serviceListUiState.collectAsState()
 
+    SecurityKeyEditScreenContent(
+        modifier = modifier,
+        onNavigateBack = navigateBack,
+        onCreate = {
+            coroutineScope.launch {
+                viewModel.createSecurityKey()
+                onNavigateUp()
+            }
+        },
+        onDelete = {
+            coroutineScope.launch {
+                viewModel.deleteSecurityKey()
+                navigateBack()
+            }
+        },
+        onUpdate = {
+            coroutineScope.launch {
+                viewModel.updateSecurityKey()
+                navigateBack()
+            }
+        },
+        onDetailsChanged = {
+            viewModel.updateSecurityKeyUiState(
+                details = it,
+                isAddingNew = viewModel.securityKeyUiState.isAddingNew
+            )
+        },
+        securityKeyUiState = viewModel.securityKeyUiState,
+        serviceListUiState = serviceListUiState
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SecurityKeyEditScreenContent(
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {},
+    onCreate: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onUpdate: () -> Unit = {},
+    onDetailsChanged: (SecurityKeyDetails) -> Unit = {},
+    securityKeyUiState: SecurityKeyUiState = SecurityKeyUiState(),
+    serviceListUiState: ServiceListUiState = ServiceListUiState(),
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         stringResource(
-                            id = if (viewModel.securityKeyUiState.isAddingNew) {
+                            id = if (securityKeyUiState.isAddingNew) {
                                 SecurityKeyEditDestination.addKeyTitleRes
                             } else {
                                 SecurityKeyEditDestination.titleRes
@@ -94,15 +139,10 @@ fun SecurityKeyEditScreen(
                     )
                 },
                 actions = {
-                    if (viewModel.securityKeyUiState.isAddingNew) {
+                    if (securityKeyUiState.isAddingNew) {
                         IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.createSecurityKey()
-                                    onNavigateUp()
-                                }
-                            },
-                            enabled = viewModel.securityKeyUiState.isEntryValid
+                            onClick = onCreate,
+                            enabled = securityKeyUiState.isEntryValid
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Check,
@@ -111,13 +151,8 @@ fun SecurityKeyEditScreen(
                         }
                     } else { // edit
                         IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.deleteSecurityKey()
-                                    navigateBack()
-                                }
-                            },
-                            enabled = viewModel.securityKeyUiState.isEntryValid
+                            onClick = onDelete,
+                            enabled = securityKeyUiState.isEntryValid
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Delete,
@@ -125,13 +160,8 @@ fun SecurityKeyEditScreen(
                             )
                         }
                         IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.updateSecurityKey()
-                                    navigateBack()
-                                }
-                            },
-                            enabled = viewModel.securityKeyUiState.isEntryValid
+                            onClick = onUpdate,
+                            enabled = securityKeyUiState.isEntryValid
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Check,
@@ -141,7 +171,7 @@ fun SecurityKeyEditScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.security_key_edit_screen_navigation_back)
@@ -152,17 +182,10 @@ fun SecurityKeyEditScreen(
         },
     ) { innerPadding ->
 
-        val allServices by viewModel.serviceListUiState.collectAsState()
-
         SecurityKeyEntryBody(
-            securityKeyUiState = viewModel.securityKeyUiState,
-            serviceListUiState = allServices,
-            onSecurityKeyValueChange = {
-                viewModel.updateSecurityKeyUiState(
-                    details = it,
-                    isAddingNew = viewModel.securityKeyUiState.isAddingNew
-                )
-            },
+            securityKeyUiState = securityKeyUiState,
+            serviceListUiState = serviceListUiState,
+            onSecurityKeyValueChange = onDetailsChanged,
             modifier = modifier.padding(innerPadding)
         )
     }
@@ -268,27 +291,58 @@ fun SecurityKeyInputForm(
 
 @Preview
 @Composable
-fun InputFormPreview() {
-    SecurityKeyInputForm(
-        securityKeyDetails = SecurityKeyDetails(
-            services = listOf(1, 2, 4, 5)
-        ),
-        serviceListUiState = ServiceListUiState(
-            listOf(
-                Service(
-                    serviceId = 1,
-                    serviceName = "Email service 1",
-                    serviceUser = "user@email1.com"
-                ),
-                Service(serviceId = 2, serviceName = "Email 2", serviceUser = "user@email2.com"),
-                Service(
-                    serviceId = 3,
-                    serviceName = "Local login / TOTP",
-                    serviceUser = "Something"
-                ),
-                Service(serviceId = 4, serviceName = "Not enabled service", serviceUser = "user"),
-                Service(serviceId = 5, serviceName = "Not enabled service", serviceUser = "user"),
-            )
-        ),
-        onValueChange = {})
+fun AddSecuritySecurityKeyScreenPreview() {
+    HwKeyInfoTheme {
+        SecurityKeyEditScreenContent(
+            securityKeyUiState = previewSecurityKeyUiState.copy(isAddingNew = true),
+            serviceListUiState = previewServiceListUiState
+        )
+    }
 }
+
+@Preview
+@Composable
+fun EditSecuritySecurityKeyScreenPreview() {
+    HwKeyInfoTheme {
+        SecurityKeyEditScreenContent(
+            securityKeyUiState = previewSecurityKeyUiState.copy(isAddingNew = false),
+            serviceListUiState = previewServiceListUiState
+        )
+    }
+}
+
+val previewSecurityKeyUiState = SecurityKeyUiState(
+    SecurityKeyDetails(
+        services = listOf(1, 2, 4, 5)
+    )
+)
+
+val previewServiceListUiState = ServiceListUiState(
+    listOf(
+        Service(
+            serviceId = 1,
+            serviceName = "Email service 1",
+            serviceUser = "user@email1.com"
+        ),
+        Service(
+            serviceId = 2,
+            serviceName = "Email 2",
+            serviceUser = "user@email2.com"
+        ),
+        Service(
+            serviceId = 3,
+            serviceName = "Local login / TOTP",
+            serviceUser = "Something"
+        ),
+        Service(
+            serviceId = 4,
+            serviceName = "Not enabled service",
+            serviceUser = "user"
+        ),
+        Service(
+            serviceId = 5,
+            serviceName = "Not enabled service",
+            serviceUser = "user"
+        ),
+    )
+)

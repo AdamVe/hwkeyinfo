@@ -1,5 +1,7 @@
 package com.adamve.hwkeyinfo.ui.security_key
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,8 +16,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -26,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +45,6 @@ object SecurityKeyListDestination : AppDestination {
     override val titleRes = R.string.app_page_title_key_list
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityKeyListScreen(
     navigateToItemEntry: () -> Unit,
@@ -52,6 +55,24 @@ fun SecurityKeyListScreen(
 ) {
 
     val securityKeyListUiState by viewModel.securityKeyListUiState.collectAsState()
+    SecurityKeyListScreenContent(
+        modifier = modifier,
+        navigateToItemEntry = navigateToItemEntry,
+        navigateToItemUpdate = navigateToItemUpdate,
+        navigateToServiceList = navigateToServiceList,
+        securityKeyListUiState = securityKeyListUiState
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SecurityKeyListScreenContent(
+    modifier: Modifier = Modifier,
+    navigateToItemEntry: () -> Unit = {},
+    navigateToItemUpdate: (Long) -> Unit = {},
+    navigateToServiceList: () -> Unit = {},
+    securityKeyListUiState: SecurityKeyListUiState = SecurityKeyListUiState(),
+) {
 
     Scaffold(
         topBar = {
@@ -60,7 +81,10 @@ fun SecurityKeyListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = navigateToItemEntry) {
+            ExtendedFloatingActionButton(
+                onClick = navigateToItemEntry,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            ) {
                 Icon(Icons.Filled.Add, "")
             }
         },
@@ -126,11 +150,36 @@ fun SecurityKeyListScreenBody(
     }
 }
 
-@Preview(showSystemUi = true, widthDp = 320)
+@Preview(
+    showSystemUi = true,
+    device = Devices.PIXEL_4_XL,
+    uiMode = UI_MODE_NIGHT_NO
+)
 @Composable
-fun SecurityKeyListPreview() {
+fun LightSecurityKeyListPreview() {
+    HwKeyInfoTheme {
+        SecurityKeyListScreenContent(
+            securityKeyListUiState = previewSecurityKeyListUiState,
+        )
+    }
+}
 
-    val items = listOf(
+@Preview(
+    showSystemUi = true,
+    device = Devices.PIXEL_4_XL,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Composable
+fun DarkSecurityKeyListPreview() {
+    HwKeyInfoTheme {
+        SecurityKeyListScreenContent(
+            securityKeyListUiState = previewSecurityKeyListUiState,
+        )
+    }
+}
+
+val previewSecurityKeyListUiState = SecurityKeyListUiState(
+    itemList = listOf(
         SecurityKeyWithServices(
             SecurityKey(name = "Main key", type = "HW Key Type 1"),
             listOf()
@@ -145,12 +194,5 @@ fun SecurityKeyListPreview() {
         )
 
     )
-
-    HwKeyInfoTheme {
-        SecurityKeyListScreenBody(
-            itemList = items
-        )
-    }
-}
-
+)
 
