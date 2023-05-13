@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -26,7 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
-import com.adamve.hwkeyinfo.ui.security_key.CustomTextField
+import com.adamve.hwkeyinfo.ui.widgets.CustomTextField
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 import kotlinx.coroutines.launch
 
@@ -39,22 +40,65 @@ object ServiceEditDestination : AppDestination {
     val addServiceTitleRes = R.string.app_page_title_service_add
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceEditScreen(
-    navigateBack: () -> Unit,
-    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
+    navigateBack: () -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: ServiceEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    ServiceEditScreenContent(
+        modifier = modifier,
+        onNavigateUp = onNavigateUp,
+        onCreate = {
+            coroutineScope.launch {
+                viewModel.saveService()
+                navigateBack()
+            }
+        },
+        onDelete = {
+            coroutineScope.launch {
+                viewModel.deleteService()
+                navigateBack()
+            }
+        },
+        onUpdate = {
+            coroutineScope.launch {
+                viewModel.updateService()
+                navigateBack()
+            }
+        },
+        onDetailsChanged = {
+            viewModel.updateServiceUiState(
+                it,
+                viewModel.serviceUiState.isAddingNew
+            )
+        },
+        serviceUiState = viewModel.serviceUiState
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ServiceEditScreenContent(
+    modifier: Modifier = Modifier,
+    onNavigateUp: () -> Unit = {},
+    onCreate: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onUpdate: () -> Unit = {},
+    onDetailsChanged: (ServiceDetails) -> Unit = {},
+    serviceUiState: ServiceUiState = ServiceUiState(),
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         stringResource(
-                            id = if (viewModel.serviceUiState.isAddingNew) {
+                            id = if (serviceUiState.isAddingNew) {
                                 ServiceEditDestination.addServiceTitleRes
                             } else {
                                 ServiceEditDestination.titleRes
@@ -63,15 +107,10 @@ fun ServiceEditScreen(
                     )
                 },
                 actions = {
-                    if (viewModel.serviceUiState.isAddingNew) {
+                    if (serviceUiState.isAddingNew) {
                         IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.saveService()
-                                    navigateBack()
-                                }
-                            },
-                            enabled = viewModel.serviceUiState.isEntryValid
+                            onClick = onCreate,
+                            enabled = serviceUiState.isEntryValid
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Check,
@@ -80,13 +119,8 @@ fun ServiceEditScreen(
                         }
                     } else {
                         IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.deleteService()
-                                    navigateBack()
-                                }
-                            },
-                            enabled = viewModel.serviceUiState.isEntryValid
+                            onClick = onDelete,
+                            enabled = serviceUiState.isEntryValid
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Delete,
@@ -94,13 +128,8 @@ fun ServiceEditScreen(
                             )
                         }
                         IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.updateService()
-                                    navigateBack()
-                                }
-                            },
-                            enabled = viewModel.serviceUiState.isEntryValid
+                            onClick = onUpdate,
+                            enabled = serviceUiState.isEntryValid
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Check,
@@ -122,14 +151,9 @@ fun ServiceEditScreen(
     ) { innerPadding ->
 
         ServiceEntryBody(
-            serviceUiState = viewModel.serviceUiState,
-            onServiceValueChange = {
-                viewModel.updateServiceUiState(
-                    it,
-                    viewModel.serviceUiState.isAddingNew
-                )
-            },
-            modifier = modifier.padding(innerPadding)
+            modifier = modifier.padding(innerPadding),
+            serviceUiState = serviceUiState,
+            onServiceValueChange = onDetailsChanged
         )
 
     }
@@ -176,9 +200,9 @@ fun ServiceInputForm(
 
 @Composable
 fun ServiceEntryBody(
+    modifier: Modifier = Modifier,
     serviceUiState: ServiceUiState,
-    onServiceValueChange: (ServiceDetails) -> Unit,
-    modifier: Modifier = Modifier
+    onServiceValueChange: (ServiceDetails) -> Unit
 ) {
     Column(modifier = modifier) {
         ServiceInputForm(
@@ -188,15 +212,28 @@ fun ServiceEntryBody(
     }
 }
 
-@Preview(widthDp = 320)
+@Preview
 @Composable
-fun ServiceInputFormPreview() {
+fun CreateServiceEditScreenPreview() {
     HwKeyInfoTheme {
-        ServiceInputForm(
-            serviceDetails = ServiceDetails(
-                serviceName = "Email provider",
-                serviceUser = "User account"
-            )
+        ServiceEditScreenContent(
+            serviceUiState = previewServiceUiState.copy(isAddingNew = true)
         )
     }
 }
+@Preview
+@Composable
+fun EditServiceEditScreenPreview() {
+    HwKeyInfoTheme {
+        ServiceEditScreenContent(
+            serviceUiState = previewServiceUiState.copy(isAddingNew = false)
+        )
+    }
+}
+
+val previewServiceUiState = ServiceUiState(
+    details = ServiceDetails(
+        serviceName = "Some service",
+        serviceUser = "user@service.com"
+    )
+)

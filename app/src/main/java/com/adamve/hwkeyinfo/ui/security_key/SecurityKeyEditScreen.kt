@@ -1,5 +1,6 @@
 package com.adamve.hwkeyinfo.ui.security_key
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -28,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +39,7 @@ import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
+import com.adamve.hwkeyinfo.ui.widgets.CustomTextField
 import kotlinx.coroutines.launch
 
 object SecurityKeyEditDestination : AppDestination {
@@ -48,26 +49,6 @@ object SecurityKeyEditDestination : AppDestination {
     val routeWithArgs = "$route/{$securityKeyIdArg}"
     const val addKeyRoute = "security_key_add"
     val addKeyTitleRes = R.string.app_page_title_key_add
-}
-
-@Composable
-fun CustomTextField(
-    title: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    keyboardType: KeyboardType,
-    modifier: Modifier = Modifier,
-    leadingIcon: @Composable (() -> Unit)? = null
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = { onValueChange(it) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = true,
-        label = { Text(title) },
-        leadingIcon = leadingIcon,
-        modifier = modifier
-    )
 }
 
 @Composable
@@ -82,11 +63,11 @@ fun SecurityKeyEditScreen(
 
     SecurityKeyEditScreenContent(
         modifier = modifier,
-        onNavigateBack = navigateBack,
+        onNavigateUp = onNavigateUp,
         onCreate = {
             coroutineScope.launch {
                 viewModel.createSecurityKey()
-                onNavigateUp()
+                navigateBack()
             }
         },
         onDelete = {
@@ -116,7 +97,7 @@ fun SecurityKeyEditScreen(
 @Composable
 fun SecurityKeyEditScreenContent(
     modifier: Modifier = Modifier,
-    onNavigateBack: () -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     onCreate: () -> Unit = {},
     onDelete: () -> Unit = {},
     onUpdate: () -> Unit = {},
@@ -171,7 +152,7 @@ fun SecurityKeyEditScreenContent(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.security_key_edit_screen_navigation_back)

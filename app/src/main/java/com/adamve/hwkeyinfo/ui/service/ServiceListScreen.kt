@@ -20,8 +20,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -49,18 +51,34 @@ object ServiceListDestination : AppDestination {
     override val titleRes = R.string.app_page_title_service_list
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceListScreen(
-    navigateToItemEntry: () -> Unit,
-    navigateToItemUpdate: (Long) -> Unit,
-    navigateToSecurityKeyList: () -> Unit,
     modifier: Modifier = Modifier,
+    navigateToItemEntry: () -> Unit = {},
+    navigateToItemUpdate: (Long) -> Unit = {},
+    navigateToSecurityKeyList: () -> Unit = {},
     viewModel: ServiceListViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     val serviceListUiState by viewModel.serviceListUiState.collectAsState()
+    ServiceListScreenContent(
+        modifier = modifier,
+        navigateToItemEntry = navigateToItemEntry,
+        navigateToItemUpdate = navigateToItemUpdate,
+        navigateToSecurityKeyList = navigateToSecurityKeyList,
+        serviceListUiState = serviceListUiState
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ServiceListScreenContent(
+    modifier: Modifier = Modifier,
+    navigateToItemEntry: () -> Unit = {},
+    navigateToItemUpdate: (Long) -> Unit = {},
+    navigateToSecurityKeyList: () -> Unit = {},
+    serviceListUiState: ServiceListUiState = ServiceListUiState()
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,7 +86,10 @@ fun ServiceListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = navigateToItemEntry) {
+            ExtendedFloatingActionButton(
+                onClick = navigateToItemEntry,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            ) {
                 Icon(Icons.Filled.Add, "")
             }
         },
@@ -156,16 +177,22 @@ fun ServiceRow(
     }
 }
 
-@Preview(widthDp = 320)
+@Preview
 @Composable
-fun ServiceRowPreview() {
+fun ServiceListScreenPreview() {
     HwKeyInfoTheme {
-        ServiceRow(
-            service = Service(
-                serviceName = "Email provider",
-                serviceUser = "User"
-            )
+        ServiceListScreenContent(
+            serviceListUiState = previewServiceListUiState
         )
     }
 }
+
+val previewServiceListUiState = ServiceListUiState(
+    serviceList = listOf(
+        Service(serviceName = "e-mail", serviceUser = "user@email.com"),
+        Service(serviceName = "PGP Keys", serviceUser = "user@private-email.com"),
+        Service(serviceName = "e-mail", serviceUser = "another.account@email.com"),
+        Service(serviceName = "oath account", serviceUser = "user@email.com"),
+    )
+)
 
