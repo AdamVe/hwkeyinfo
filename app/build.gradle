@@ -76,6 +76,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3-android:1.1.0-beta02'
 
     implementation 'com.google.accompanist:accompanist-themeadapter-material:0.28.0'
+    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.28.0'
 
 
     testImplementation 'junit:junit:4.13.2'
