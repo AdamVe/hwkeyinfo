@@ -17,8 +17,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -161,10 +164,13 @@ fun ServiceEditScreenContent(
 
 @Composable
 fun ServiceInputForm(
-    serviceDetails: ServiceDetails,
+    serviceUiState: ServiceUiState,
     modifier: Modifier = Modifier,
     onValueChange: (ServiceDetails) -> Unit = {}
 ) {
+
+    val focusRequester = FocusRequester()
+    val serviceDetails = serviceUiState.details
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -182,7 +188,9 @@ fun ServiceInputForm(
                     title = stringResource(R.string.service_input_form_name_title),
                     value = serviceDetails.serviceName,
                     onValueChange = { onValueChange(serviceDetails.copy(serviceName = it)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                     keyboardType = KeyboardType.Text,
                 )
             }
@@ -196,6 +204,12 @@ fun ServiceInputForm(
             )
         }
     }
+
+    LaunchedEffect(Unit) {
+        if (serviceUiState.isAddingNew) {
+            focusRequester.requestFocus()
+        }
+    }
 }
 
 @Composable
@@ -206,7 +220,7 @@ fun ServiceEntryBody(
 ) {
     Column(modifier = modifier) {
         ServiceInputForm(
-            serviceDetails = serviceUiState.details,
+            serviceUiState = serviceUiState,
             onValueChange = onServiceValueChange
         )
     }

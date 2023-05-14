@@ -22,11 +22,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -181,7 +185,7 @@ fun SecurityKeyEntryBody(
 ) {
     Column(modifier = modifier) {
         SecurityKeyInputForm(
-            securityKeyDetails = securityKeyUiState.details,
+            securityKeyUiState = securityKeyUiState,
             serviceListUiState = serviceListUiState,
             onValueChange = onSecurityKeyValueChange
         )
@@ -191,11 +195,16 @@ fun SecurityKeyEntryBody(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SecurityKeyInputForm(
-    securityKeyDetails: SecurityKeyDetails,
+    securityKeyUiState: SecurityKeyUiState,
     serviceListUiState: ServiceListUiState,
-    modifier: Modifier = Modifier,
-    onValueChange: (SecurityKeyDetails) -> Unit
+    onValueChange: (SecurityKeyDetails) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+
+    val focusRequester = FocusRequester()
+
+    val securityKeyDetails = securityKeyUiState.details
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -216,7 +225,9 @@ fun SecurityKeyInputForm(
                     value = securityKeyDetails.name,
                     onValueChange = { onValueChange(securityKeyDetails.copy(name = it)) },
                     keyboardType = KeyboardType.Text,
-                    modifier = Modifier.weight(2f)
+                    modifier = Modifier
+                        .weight(2f)
+                        .focusRequester(focusRequester)
                 )
             }
 
@@ -265,6 +276,12 @@ fun SecurityKeyInputForm(
                             Text(service.serviceUser, fontSize = 10.sp)
                         }
                     })
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            if (securityKeyUiState.isAddingNew) {
+                focusRequester.requestFocus()
             }
         }
     }
