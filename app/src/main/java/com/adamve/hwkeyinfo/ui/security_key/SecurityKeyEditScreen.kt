@@ -1,6 +1,5 @@
 package com.adamve.hwkeyinfo.ui.security_key
 
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -30,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +39,7 @@ import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
+import com.adamve.hwkeyinfo.ui.service.serviceComparator
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 import com.adamve.hwkeyinfo.ui.widgets.CustomTextField
 import kotlinx.coroutines.launch
@@ -252,7 +250,7 @@ fun SecurityKeyInputForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.Top
         ) {
-            serviceListUiState.allServices.forEach { service ->
+            serviceListUiState.allServices.sortedWith(serviceComparator).forEach { service ->
                 FilterChip(
                     modifier = Modifier.padding(horizontal = 0.dp, vertical = 4.dp),
                     selected = securityKeyDetails.services.contains(service.serviceId),

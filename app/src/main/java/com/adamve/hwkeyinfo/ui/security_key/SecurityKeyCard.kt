@@ -44,6 +44,7 @@ import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
 import com.adamve.hwkeyinfo.data.Service
+import com.adamve.hwkeyinfo.ui.service.serviceComparator
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 
 @Composable
@@ -121,7 +122,8 @@ fun SecurityKeyCard(
         isExpanded = expanded,
         onExpandButtonClick = { expanded = !expanded },
         modifier = modifier,
-        onClick = onClick)
+        onClick = onClick
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -186,7 +188,7 @@ fun SecurityKeyCardContent(
                             modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
                         )
 
-                        if(hasServices) {
+                        if (hasServices) {
                             IconButton(
                                 onClick = onExpandButtonClick,
                                 modifier = Modifier.height(18.dp)
@@ -227,16 +229,15 @@ fun SecurityKeyCardContent(
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        securityKeyWithServices.services.sortedBy {
-                            val nameLen = it.serviceName.length
-                            val userLen = it.serviceUser.length
-                            userLen
-                        }.forEach {
-                            ServiceTag(
-                                it,
-                                modifier = Modifier.fillMaxWidth(fraction = 0.49f)
-                            )
-                        }
+                        securityKeyWithServices
+                            .services
+                            .sortedWith(serviceComparator)
+                            .forEach {
+                                ServiceTag(
+                                    it,
+                                    modifier = Modifier.fillMaxWidth(fraction = 0.49f)
+                                )
+                            }
                     }
                 }
             }
@@ -291,7 +292,8 @@ fun ExpandedSecurityKeyCardPreview() {
         SecurityKeyCardContent(
             SecurityKeyWithServices(
                 securityKey = previewSecurityKey,
-                services = previewServices),
+                services = previewServices
+            ),
             isExpanded = true,
             onExpandButtonClick = {})
     }

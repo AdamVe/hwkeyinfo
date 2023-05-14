@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
+import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
@@ -43,6 +44,11 @@ import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 object SecurityKeyListDestination : AppDestination {
     override val route = "security_keys"
     override val titleRes = R.string.app_page_title_key_list
+}
+
+val securityKeyComparator = Comparator<SecurityKeyWithServices> { l, r ->
+    (l.securityKey.name + l.securityKey.type).uppercase()
+        .compareTo((r.securityKey.name + r.securityKey.type).uppercase())
 }
 
 @Composable
@@ -115,7 +121,9 @@ fun SecurityKeyListScreenContent(
         }
     ) { innerPadding ->
         SecurityKeyListScreenBody(
-            itemList = securityKeyListUiState.itemList,
+            itemList = securityKeyListUiState
+                .itemList
+                .sortedWith(securityKeyComparator),
             onItemClick = navigateToItemUpdate,
             modifier = modifier.padding(innerPadding)
         )

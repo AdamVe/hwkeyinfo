@@ -1,5 +1,6 @@
 package com.adamve.hwkeyinfo.ui.service
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -120,7 +121,9 @@ fun ServiceListScreenContent(
         }
     ) { innerPadding ->
         ServiceListScreenBody(
-            itemList = serviceListUiState.serviceList,
+            itemList = serviceListUiState
+                .serviceList
+                .sortedWith(serviceComparator),
             onItemClick = navigateToItemUpdate,
             modifier = modifier.padding(innerPadding)
         )
@@ -177,7 +180,8 @@ fun ServiceRow(
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ServiceListScreenPreview() {
     HwKeyInfoTheme {
