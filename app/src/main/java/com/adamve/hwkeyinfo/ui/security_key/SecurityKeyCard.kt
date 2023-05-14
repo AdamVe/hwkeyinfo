@@ -84,8 +84,7 @@ fun KeyIdentifier(identifier: String, modifier: Modifier = Modifier) {
     Text(
         identifier,
         modifier = modifier,
-        fontSize = MaterialTheme.typography.headlineLarge.fontSize,
-        fontWeight = MaterialTheme.typography.headlineLarge.fontWeight
+        style = MaterialTheme.typography.headlineLarge
     )
 }
 
@@ -96,9 +95,10 @@ fun Headline(securityKey: SecurityKey, modifier: Modifier = Modifier) {
             KeyIdentifier(securityKey.name, modifier)
             Text(
                 securityKey.type,
-                fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                fontWeight = FontWeight.Light,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
                 maxLines = 1,
             )
         }
