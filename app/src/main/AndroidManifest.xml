@@ -16,7 +16,8 @@
         <activity
             android:name=".HwKeyInfoActivity"
             android:exported="true"
-            android:theme="@style/Theme.HwKeyInfo.NoActionBar">
+            android:theme="@style/Theme.HwKeyInfo.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
