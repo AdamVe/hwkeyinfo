@@ -7,9 +7,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -17,7 +17,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -71,7 +74,7 @@ fun ServiceTag(
         Text(
             service.serviceUser,
             style = MaterialTheme.typography.bodySmall.copy(
-                fontWeight = FontWeight.ExtraLight
+                fontWeight = FontWeight.Light
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -80,19 +83,42 @@ fun ServiceTag(
 }
 
 @Composable
-fun KeyIdentifier(identifier: String, modifier: Modifier = Modifier) {
-    Text(
-        identifier,
-        modifier = modifier,
-        style = MaterialTheme.typography.headlineLarge
-    )
+fun KeyIdentifier(
+    identifier: String,
+    modifier: Modifier = Modifier,
+    onAction: () -> Unit = {}
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.CenterEnd),
+            onClick = onAction
+        ) {
+            Icon(
+                Icons.Default.Edit,
+                "Edit",
+                modifier = Modifier
+                    .size(24.dp)
+            )
+        }
+        Text(
+            identifier,
+            modifier = modifier,
+            style = MaterialTheme.typography.headlineLarge
+        )
+    }
 }
 
 @Composable
-fun Headline(securityKey: SecurityKey, modifier: Modifier = Modifier) {
+fun Headline(
+    securityKey: SecurityKey,
+    modifier: Modifier = Modifier,
+    onAction: () -> Unit = {}
+) {
+
     if (securityKey.name.isNotBlank() && securityKey.type.isNotBlank()) {
         Column {
-            KeyIdentifier(securityKey.name, modifier)
+            KeyIdentifier(securityKey.name, modifier, onAction = onAction)
             Text(
                 securityKey.type,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -137,7 +163,7 @@ fun SecurityKeyCardContent(
 ) {
     val securityKey = securityKeyWithServices.securityKey
     Card(
-        onClick = { onClick(securityKey.id) },
+        onClick = { },
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
@@ -149,7 +175,7 @@ fun SecurityKeyCardContent(
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Headline(securityKey)
+            Headline(securityKey, onAction = { onClick(securityKey.id) })
             if (securityKey.description.isNotBlank()) {
                 Text(
                     securityKey.description,
@@ -211,17 +237,18 @@ fun SecurityKeyCardContent(
                 val density = LocalDensity.current
                 AnimatedVisibility(
                     visible = isExpanded,
-                    enter = slideInVertically {
-                        // Slide in from 40 dp from the top.
-                        with(density) { -40.dp.roundToPx() }
+                    enter =
+                    slideInVertically {
+                        // Slide in from 20 dp from the top.
+                        with(density) { -20.dp.roundToPx() }
                     } + expandVertically(
                         // Expand from the top.
-                        expandFrom = Alignment.Top
+                        expandFrom = Alignment.Top,
                     ) + fadeIn(
                         // Fade in with the initial alpha of 0.3f.
-                        initialAlpha = 0.3f
+                        initialAlpha = 0.3f,
                     ),
-                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                    exit = shrinkVertically() + fadeOut()
 
                 ) {
                     FlowRow(
@@ -235,7 +262,7 @@ fun SecurityKeyCardContent(
                             .forEach {
                                 ServiceTag(
                                     it,
-                                    modifier = Modifier.fillMaxWidth(fraction = 0.49f)
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                     }
