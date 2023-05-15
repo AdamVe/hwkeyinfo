@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
 fun CustomTextField(
@@ -14,10 +15,11 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType,
     modifier: Modifier = Modifier,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
+    showExisting: Boolean = false
 ) {
     OutlinedTextField(
-        value = value,
+        value = if (value.isBlank() && showExisting) " " else value,
         onValueChange = { onValueChange(it) },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         singleLine = true,

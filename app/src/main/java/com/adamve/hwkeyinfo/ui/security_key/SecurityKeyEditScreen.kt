@@ -1,25 +1,30 @@
 package com.adamve.hwkeyinfo.ui.security_key
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,13 +32,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.Service
@@ -190,7 +197,50 @@ fun SecurityKeyEntryBody(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun ServiceItem(
+    service: Service,
+    modifier: Modifier = Modifier,
+    value: Boolean = false,
+    onValueChange: () -> Unit = {}
+) {
+    Row(
+        modifier = modifier
+            .padding(bottom = 2.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .padding(horizontal = 2.dp)
+            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.dp))
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                service.serviceName,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                service.serviceUser,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.Light
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Checkbox(
+            checked = value,
+            onCheckedChange = { onValueChange() },
+            modifier = Modifier.height(14.dp)
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SecurityKeyInputForm(
     securityKeyUiState: SecurityKeyUiState,
@@ -221,11 +271,14 @@ fun SecurityKeyInputForm(
                 CustomTextField(
                     title = stringResource(R.string.security_key_input_form_key_title),
                     value = securityKeyDetails.name,
-                    onValueChange = { onValueChange(securityKeyDetails.copy(name = it)) },
+                    onValueChange = {
+                        onValueChange(securityKeyDetails.copy(name = it))
+                    },
                     keyboardType = KeyboardType.Text,
                     modifier = Modifier
                         .weight(2f)
-                        .focusRequester(focusRequester)
+                        .focusRequester(focusRequester),
+                    showExisting = !securityKeyUiState.isAddingNew
                 )
             }
 
@@ -234,7 +287,8 @@ fun SecurityKeyInputForm(
                 value = securityKeyDetails.type,
                 onValueChange = { onValueChange(securityKeyDetails.copy(type = it)) },
                 keyboardType = KeyboardType.Text,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                showExisting = !securityKeyUiState.isAddingNew
             )
 
             CustomTextField(
@@ -242,38 +296,43 @@ fun SecurityKeyInputForm(
                 value = securityKeyDetails.description,
                 onValueChange = { onValueChange(securityKeyDetails.copy(description = it)) },
                 keyboardType = KeyboardType.Text,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                showExisting = !securityKeyUiState.isAddingNew
             )
         }
-        Text(text = stringResource(R.string.security_key_input_form_services_header))
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Top
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
+                .padding(8.dp)
         ) {
-            serviceListUiState.allServices.sortedWith(serviceComparator).forEach { service ->
-                FilterChip(
-                    modifier = Modifier.padding(horizontal = 0.dp, vertical = 4.dp),
-                    selected = securityKeyDetails.services.contains(service.serviceId),
-                    onClick = {
-                        onValueChange(
-                            securityKeyDetails.copy(
-                                services = if (securityKeyDetails.services.contains(service.serviceId)) {
-                                    securityKeyDetails.services.minus(service.serviceId)
-                                } else {
-                                    securityKeyDetails.services.plus(service.serviceId)
-                                }
+            Text(text = stringResource(R.string.security_key_input_form_services_header))
+            FlowRow(
+                modifier = Modifier.padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                serviceListUiState.allServices.sortedWith(serviceComparator).forEach { service ->
+                    ServiceItem(
+                        service = service,
+                        modifier = Modifier.fillMaxWidth(),
+                        value = securityKeyDetails.services.contains(service.serviceId),
+                        onValueChange = {
+                            onValueChange(
+                                securityKeyDetails.copy(
+                                    services = if (securityKeyDetails.services.contains(service.serviceId)) {
+                                        securityKeyDetails.services.minus(service.serviceId)
+                                    } else {
+                                        securityKeyDetails.services.plus(service.serviceId)
+                                    }
+                                )
                             )
-                        )
-                    },
-                    label = {
-                        Column(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp),
-                        ) {
-                            Text(service.serviceName, fontSize = 12.sp)
-                            Text(service.serviceUser, fontSize = 10.sp)
                         }
-                    })
+                    )
+                }
             }
         }
 
