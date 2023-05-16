@@ -167,24 +167,26 @@ val previewSecurityKeys = listOf(
     SecurityKey(id = 3, name = "Key3"),
 )
 
-val previewServiceListUiState = ServiceListUiState(
-    serviceList = listOf(
-        ServiceWithSecurityKeys(
-            Service(serviceName = "e-mail", serviceUser = "user@email.com"),
-            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
-        ),
-        ServiceWithSecurityKeys(
-            Service(serviceName = "PGP Keys", serviceUser = "user@private-email.com"),
-            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
-        ),
-        ServiceWithSecurityKeys(
-            Service(serviceName = "e-mail", serviceUser = "another.account@email.com"),
-            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
-        ),
-        ServiceWithSecurityKeys(
-            Service(serviceName = "oath account", serviceUser = "user@email.com"),
-            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
-        )
+val previewServicesWithSecurityKeys = listOf(
+    ServiceWithSecurityKeys(
+        Service(serviceName = "e-mail", serviceUser = "user@email.com"),
+        listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+    ),
+    ServiceWithSecurityKeys(
+        Service(serviceName = "PGP Keys", serviceUser = "user@private-email.com"),
+        listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+    ),
+    ServiceWithSecurityKeys(
+        Service(serviceName = "e-mail", serviceUser = "another.account@email.com"),
+        listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+    ),
+    ServiceWithSecurityKeys(
+        Service(serviceName = "oath account", serviceUser = "user@email.com"),
+        listOf(previewSecurityKeys[0], previewSecurityKeys[1])
     )
+)
+
+val previewServiceListUiState = ServiceListUiState(
+    previewServicesWithSecurityKeys
 )
 

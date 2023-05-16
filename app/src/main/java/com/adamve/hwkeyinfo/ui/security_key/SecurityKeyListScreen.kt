@@ -36,7 +36,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
-import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
@@ -46,7 +45,12 @@ object SecurityKeyListDestination : AppDestination {
     override val titleRes = R.string.app_page_title_key_list
 }
 
-val securityKeyComparator = Comparator<SecurityKeyWithServices> { l, r ->
+val securityKeyComparator = Comparator<SecurityKey> { l, r ->
+    (l.name + l.type).uppercase()
+        .compareTo((r.name + r.type).uppercase())
+}
+
+val securityKeyWithServicesComparator = Comparator<SecurityKeyWithServices> { l, r ->
     (l.securityKey.name + l.securityKey.type).uppercase()
         .compareTo((r.securityKey.name + r.securityKey.type).uppercase())
 }
@@ -123,7 +127,7 @@ fun SecurityKeyListScreenContent(
         SecurityKeyListScreenBody(
             itemList = securityKeyListUiState
                 .itemList
-                .sortedWith(securityKeyComparator),
+                .sortedWith(securityKeyWithServicesComparator),
             onItemClick = navigateToItemUpdate,
             modifier = modifier.padding(innerPadding)
         )
