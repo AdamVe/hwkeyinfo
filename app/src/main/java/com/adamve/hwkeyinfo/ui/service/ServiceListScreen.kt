@@ -1,26 +1,19 @@
 package com.adamve.hwkeyinfo.ui.service
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,16 +27,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
+import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.Service
+import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
@@ -124,7 +115,7 @@ fun ServiceListScreenContent(
         ServiceListScreenBody(
             itemList = serviceListUiState
                 .serviceList
-                .sortedWith(serviceComparator),
+                .sortedWith(serviceWithSecurityKeysComparator),
             onItemClick = navigateToItemUpdate,
             modifier = modifier.padding(innerPadding)
         )
@@ -133,7 +124,7 @@ fun ServiceListScreenContent(
 
 @Composable
 fun ServiceListScreenBody(
-    itemList: List<Service>,
+    itemList: List<ServiceWithSecurityKeys>,
     onItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -159,42 +150,6 @@ fun ServiceListScreenBody(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ServiceCard(
-    service: Service,
-    modifier: Modifier = Modifier,
-    onClick: (Long) -> Unit = {},
-) {
-    Card(
-        onClick = { onClick(service.serviceId) },
-        modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                service.serviceName,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                service.serviceUser,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-            )
-        }
-
-    }
-}
-
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -206,12 +161,30 @@ fun ServiceListScreenPreview() {
     }
 }
 
+val previewSecurityKeys = listOf(
+    SecurityKey(id = 1, name = "Key1"),
+    SecurityKey(id = 2, name = "Key2"),
+    SecurityKey(id = 3, name = "Key3"),
+)
+
 val previewServiceListUiState = ServiceListUiState(
     serviceList = listOf(
-        Service(serviceName = "e-mail", serviceUser = "user@email.com"),
-        Service(serviceName = "PGP Keys", serviceUser = "user@private-email.com"),
-        Service(serviceName = "e-mail", serviceUser = "another.account@email.com"),
-        Service(serviceName = "oath account", serviceUser = "user@email.com"),
+        ServiceWithSecurityKeys(
+            Service(serviceName = "e-mail", serviceUser = "user@email.com"),
+            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+        ),
+        ServiceWithSecurityKeys(
+            Service(serviceName = "PGP Keys", serviceUser = "user@private-email.com"),
+            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+        ),
+        ServiceWithSecurityKeys(
+            Service(serviceName = "e-mail", serviceUser = "another.account@email.com"),
+            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+        ),
+        ServiceWithSecurityKeys(
+            Service(serviceName = "oath account", serviceUser = "user@email.com"),
+            listOf(previewSecurityKeys[0], previewSecurityKeys[1])
+        )
     )
 )
 

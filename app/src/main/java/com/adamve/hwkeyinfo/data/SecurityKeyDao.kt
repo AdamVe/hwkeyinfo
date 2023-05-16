@@ -50,6 +50,10 @@ interface SecurityKeyDao {
     @Query("SELECT * FROM security_keys WHERE securityKeyId = :id")
     fun getSecurityKeyWithServices(id: Long): Flow<SecurityKeyWithServices>
 
+    @Transaction
+    @Query("SELECT * FROM service")
+    fun getAllServicesWithSecurityKeys(): Flow<List<ServiceWithSecurityKeys>>
+
     @Insert
     suspend fun insertSecurityKeyServiceCrossRef(securityKeyServiceCrossRef: SecurityKeyServiceCrossRef)
 

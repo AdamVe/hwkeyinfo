@@ -49,7 +49,9 @@ data class SecurityKey(
 
 @Entity(primaryKeys = ["securityKeyId", "serviceId"])
 data class SecurityKeyServiceCrossRef(
+    @ColumnInfo(index = true)
     val securityKeyId: Long,
+    @ColumnInfo(index = true)
     val serviceId: Long
 )
 
@@ -61,4 +63,14 @@ data class SecurityKeyWithServices(
         associateBy = Junction(SecurityKeyServiceCrossRef::class)
     )
     val services: List<Service>
+)
+
+data class ServiceWithSecurityKeys(
+    @Embedded val service: Service,
+    @Relation(
+        parentColumn = "serviceId",
+        entityColumn = "securityKeyId",
+        associateBy = Junction(SecurityKeyServiceCrossRef::class)
+    )
+    val securityKeys: List<SecurityKey>
 )

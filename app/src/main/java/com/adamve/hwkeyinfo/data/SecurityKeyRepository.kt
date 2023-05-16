@@ -14,6 +14,9 @@ class SecurityKeyRepository(private val securityKeyDao: SecurityKeyDao) {
         securityKeyDao.deleteSecurityKey(securityKey)
 
     // Service
+    fun getAllServicesWithSecurityKeysStream(): Flow<List<ServiceWithSecurityKeys>> =
+        securityKeyDao.getAllServicesWithSecurityKeys()
+
     fun getAllServicesStream(): Flow<List<Service>> = securityKeyDao.getAllServices()
 
     fun getServiceStream(id: Long): Flow<Service?> = securityKeyDao.getService(id)
