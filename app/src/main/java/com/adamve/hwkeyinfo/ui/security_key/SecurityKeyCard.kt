@@ -129,9 +129,9 @@ fun Headline(
             )
         }
     } else if (securityKey.name.isNotBlank()) {
-        KeyIdentifier(securityKey.name)
+        KeyIdentifier(securityKey.name, onAction = onAction)
     } else {
-        KeyIdentifier(securityKey.type)
+        KeyIdentifier(securityKey.type, onAction = onAction)
     }
 }
 
