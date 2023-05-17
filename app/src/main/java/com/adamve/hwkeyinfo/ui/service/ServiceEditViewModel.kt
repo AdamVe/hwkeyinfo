@@ -6,10 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyRepository
 import com.adamve.hwkeyinfo.data.Service
+import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ServiceEditViewModel(
@@ -19,19 +25,28 @@ class ServiceEditViewModel(
     var serviceUiState by mutableStateOf(ServiceUiState())
         private set
 
+    val securityKeyListUiState: StateFlow<SecurityKeyListUiState> =
+        repository.getAllSecurityKeysStream()
+            .map { SecurityKeyListUiState(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = SecurityKeyListUiState()
+            )
+
     private val serviceId: Long? =
         savedStateHandle[ServiceEditDestination.serviceIdArg]
 
     init {
-        if (serviceId != null) {
-            viewModelScope.launch {
-                serviceUiState = repository.getServiceStream(serviceId)
+        viewModelScope.launch {
+            serviceUiState = if (serviceId != null) {
+                repository.getServiceWithSecurityKeysStream(serviceId)
                     .filterNotNull()
                     .first()
                     .toServiceUiState(true)
+            } else {
+                ServiceUiState(isAddingNew = true)
             }
-        } else {
-            serviceUiState = ServiceUiState(isAddingNew = true)
         }
     }
 
@@ -42,14 +57,14 @@ class ServiceEditViewModel(
     suspend fun saveService() {
         if (validateInput()) {
             val service = serviceUiState.details.toService()
-            repository.insertService(service)
+            repository.insertService(service, serviceUiState.details.securityKeys)
         }
     }
 
     suspend fun updateService() {
         if (validateInput(serviceUiState.details)) {
             val service = serviceUiState.details.toService()
-            repository.updateService(service)
+            repository.updateService(service, serviceUiState.details.securityKeys)
         }
     }
 
@@ -67,8 +82,15 @@ class ServiceEditViewModel(
             serviceName.isNotBlank() and serviceUser.isNotBlank()
         }
     }
+
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
 }
 
+data class SecurityKeyListUiState(
+    val allSecurityKeys: List<SecurityKey> = listOf()
+)
 
 data class ServiceUiState(
     val details: ServiceDetails = ServiceDetails(),
@@ -80,7 +102,8 @@ data class ServiceDetails(
     val serviceId: Long = 0L,
     val serviceName: String = "",
     val serviceUser: String = "",
-    val serviceDetails: String? = null
+    val serviceDetails: String? = null,
+    val securityKeys: List<Long> = listOf()
 )
 
 fun ServiceDetails.toService(): Service = Service(
@@ -90,15 +113,16 @@ fun ServiceDetails.toService(): Service = Service(
     serviceDetails = serviceDetails
 )
 
-fun Service.toServiceUiState(isEntryValid: Boolean = false): ServiceUiState =
+fun ServiceWithSecurityKeys.toServiceUiState(isEntryValid: Boolean = false): ServiceUiState =
     ServiceUiState(
         details = this.toServiceDetails(),
         isEntryValid = isEntryValid
     )
 
-fun Service.toServiceDetails(): ServiceDetails = ServiceDetails(
-    serviceId = serviceId,
-    serviceName = serviceName,
-    serviceUser = serviceUser,
-    serviceDetails = serviceDetails
+fun ServiceWithSecurityKeys.toServiceDetails(): ServiceDetails = ServiceDetails(
+    serviceId = service.serviceId,
+    serviceName = service.serviceName,
+    serviceUser = service.serviceUser,
+    serviceDetails = service.serviceDetails,
+    securityKeys = securityKeys.map { it.id }
 )

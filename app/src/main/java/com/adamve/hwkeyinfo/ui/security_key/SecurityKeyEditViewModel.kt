@@ -39,13 +39,13 @@ class SecurityKeyEditViewModel(
 
     init {
         viewModelScope.launch {
-            if (securityKeyId != null) {
-                securityKeyUiState = securityKeyRepository.getSecurityKeyWithServicesStream(securityKeyId)
+            securityKeyUiState = if (securityKeyId != null) {
+                securityKeyRepository.getSecurityKeyWithServicesStream(securityKeyId)
                     .filterNotNull()
                     .first()
                     .toSecurityKeyUiState(true)
             } else {
-                securityKeyUiState = SecurityKeyUiState(isAddingNew = true)
+                SecurityKeyUiState(isAddingNew = true)
             }
         }
     }

@@ -17,7 +17,7 @@ interface SecurityKeyDao {
     fun getSecurityKey(id: Long): Flow<SecurityKey>
 
     @Insert
-    suspend fun insertSecurityKey(securityKey: SecurityKey) : Long
+    suspend fun insertSecurityKey(securityKey: SecurityKey): Long
 
     @Delete
     suspend fun deleteSecurityKey(securityKey: SecurityKey)
@@ -33,13 +33,40 @@ interface SecurityKeyDao {
     fun getService(id: Long): Flow<Service>
 
     @Insert
-    suspend fun insertService(service: Service)
+    suspend fun insertService(service: Service): Long
 
     @Delete
     suspend fun deleteService(service: Service)
 
     @Update
     suspend fun updateService(service: Service)
+
+    @Transaction
+    suspend fun insertService(service: Service, securityKeys: List<Long>) {
+        val id = insertService(service)
+        securityKeys.forEach {
+            insertSecurityKeyServiceCrossRef(
+                SecurityKeyServiceCrossRef(
+                    it,
+                    id
+                )
+            )
+        }
+    }
+
+    @Transaction
+    suspend fun updateService(service: Service, securityKeys: List<Long>) {
+        updateService(service)
+        deleteSecurityKeyServices(service.serviceId)
+        securityKeys.forEach {
+            insertSecurityKeyServiceCrossRef(
+                SecurityKeyServiceCrossRef(
+                    it,
+                    service.serviceId
+                )
+            )
+        }
+    }
 
     // relations
     @Transaction
@@ -53,6 +80,10 @@ interface SecurityKeyDao {
     @Transaction
     @Query("SELECT * FROM service")
     fun getAllServicesWithSecurityKeys(): Flow<List<ServiceWithSecurityKeys>>
+
+    @Transaction
+    @Query("SELECT * FROM service WHERE serviceId = :serviceId")
+    fun getServiceWithSecurityKeys(serviceId: Long): Flow<ServiceWithSecurityKeys>
 
     @Insert
     suspend fun insertSecurityKeyServiceCrossRef(securityKeyServiceCrossRef: SecurityKeyServiceCrossRef)

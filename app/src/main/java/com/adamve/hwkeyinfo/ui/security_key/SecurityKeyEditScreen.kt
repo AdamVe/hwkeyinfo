@@ -250,7 +250,6 @@ fun SecurityKeyInputForm(
 ) {
 
     val focusRequester = FocusRequester()
-
     val securityKeyDetails = securityKeyUiState.details
 
     Column(

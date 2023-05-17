@@ -26,6 +26,7 @@
 
     <string name="service_input_form_name_title">Service Name</string>
     <string name="service_input_form_account_title">User/Account</string>
+    <string name="service_input_form_security_keys_header">Security keys</string>
 
     <string name="bottom_navigation_keys_label">Keys</string>
     <string name="bottom_navigation_services_label">Services</string>
