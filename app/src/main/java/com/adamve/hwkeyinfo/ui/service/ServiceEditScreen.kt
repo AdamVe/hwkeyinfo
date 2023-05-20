@@ -238,7 +238,7 @@ fun ServiceInputForm(
         FlowRow(
             modifier = Modifier.padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Top
+            verticalArrangement = Arrangement.Top
         ) {
             securityKeyListUiState.allSecurityKeys.sortedWith(securityKeyComparator).forEach { securityKey ->
                 SecurityKeyItem(

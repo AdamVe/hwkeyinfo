@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.UnfoldLess
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -206,7 +208,7 @@ fun SecurityKeyCardContent(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             label,
@@ -219,14 +221,10 @@ fun SecurityKeyCardContent(
                                 onClick = onExpandButtonClick,
                                 modifier = Modifier.height(18.dp)
                             ) {
-                                Icon(
-                                    painterResource(
-                                        if (isExpanded)
-                                            R.drawable.baseline_unfold_less_24
-                                        else
-                                            R.drawable.baseline_unfold_more_24
-                                    ), ""
-                                )
+                                if (isExpanded)
+                                    Icon(Icons.Outlined.UnfoldLess, "Fold service list")
+                                else
+                                    Icon(Icons.Outlined.UnfoldMore, "Unfold service list")
                             }
                         }
                     }
@@ -253,7 +251,7 @@ fun SecurityKeyCardContent(
                 ) {
                     FlowRow(
                         modifier = Modifier.padding(top = 8.dp),
-                        verticalAlignment = Alignment.Top,
+                        verticalArrangement = Arrangement.Top,
                         horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
                         securityKeyWithServices

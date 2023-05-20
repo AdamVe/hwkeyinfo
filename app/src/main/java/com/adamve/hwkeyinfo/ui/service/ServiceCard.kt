@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.UnfoldLess
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -180,14 +183,10 @@ fun SecurityKeysSection(
                         onClick = onExpandButtonClick,
                         modifier = Modifier.height(18.dp)
                     ) {
-                        Icon(
-                            painterResource(
-                                if (isExpanded)
-                                    R.drawable.baseline_unfold_less_24
-                                else
-                                    R.drawable.baseline_unfold_more_24
-                            ), ""
-                        )
+                        if (isExpanded)
+                            Icon(Icons.Outlined.UnfoldLess, "Fold key list")
+                        else
+                            Icon(Icons.Outlined.UnfoldMore, "Unfold key list")
                     }
                 }
             }
@@ -214,7 +213,7 @@ fun SecurityKeysSection(
         ) {
             FlowRow(
                 modifier = Modifier.padding(top = 8.dp),
-                verticalAlignment = Alignment.Top,
+                verticalArrangement = Arrangement.Top,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 securityKeys
