@@ -45,8 +45,8 @@ import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.security_key.securityKeyComparator
-import com.adamve.hwkeyinfo.ui.widgets.CustomTextField
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
+import com.adamve.hwkeyinfo.ui.widgets.CustomTextField
 import kotlinx.coroutines.launch
 
 object ServiceEditDestination : AppDestination {
@@ -196,7 +196,8 @@ fun ServiceInputForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(0.dp)
+            .padding(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column(
@@ -204,7 +205,6 @@ fun ServiceInputForm(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            Text(text = stringResource(R.string.security_key_input_form_information_header))
             Row {
                 CustomTextField(
                     title = stringResource(R.string.service_input_form_name_title),
@@ -214,6 +214,7 @@ fun ServiceInputForm(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     keyboardType = KeyboardType.Text,
+                    showExisting = !serviceUiState.isAddingNew
                 )
             }
 
@@ -222,7 +223,8 @@ fun ServiceInputForm(
                 value = serviceDetails.serviceUser,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { onValueChange(serviceDetails.copy(serviceUser = it)) },
-                keyboardType = KeyboardType.Text
+                keyboardType = KeyboardType.Text,
+                showExisting = !serviceUiState.isAddingNew
             )
         }
     }
@@ -240,24 +242,28 @@ fun ServiceInputForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            securityKeyListUiState.allSecurityKeys.sortedWith(securityKeyComparator).forEach { securityKey ->
-                SecurityKeyItem(
-                    securityKey = securityKey,
-                    modifier = Modifier.fillMaxWidth(),
-                    value = serviceDetails.securityKeys.contains(securityKey.id),
-                    onValueChange = {
-                        onValueChange(
-                            serviceDetails.copy(
-                                securityKeys = if (serviceDetails.securityKeys.contains(securityKey.id)) {
-                                    serviceDetails.securityKeys.minus(securityKey.id)
-                                } else {
-                                    serviceDetails.securityKeys.plus(securityKey.id)
-                                }
+            securityKeyListUiState.allSecurityKeys.sortedWith(securityKeyComparator)
+                .forEach { securityKey ->
+                    SecurityKeyItem(
+                        securityKey = securityKey,
+                        modifier = Modifier.fillMaxWidth(),
+                        value = serviceDetails.securityKeys.contains(securityKey.id),
+                        onValueChange = {
+                            onValueChange(
+                                serviceDetails.copy(
+                                    securityKeys = if (serviceDetails.securityKeys.contains(
+                                            securityKey.id
+                                        )
+                                    ) {
+                                        serviceDetails.securityKeys.minus(securityKey.id)
+                                    } else {
+                                        serviceDetails.securityKeys.plus(securityKey.id)
+                                    }
+                                )
                             )
-                        )
-                    }
-                )
-            }
+                        }
+                    )
+                }
         }
     }
 
@@ -276,7 +282,8 @@ fun ServiceEntryBody(
     modifier: Modifier = Modifier,
     onServiceValueChange: (ServiceDetails) -> Unit
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .padding(horizontal = 16.dp)) {
         ServiceInputForm(
             serviceUiState = serviceUiState,
             securityKeyListUiState = securityKeyListUiState,
@@ -338,7 +345,8 @@ fun CreateServiceEditScreenPreview() {
                 isAddingNew = true,
                 details = previewServiceUiState.details.copy(
                     securityKeys = listOf(1, 200)
-                )),
+                )
+            ),
             securityKeyListUiState = previewSecurityListUiState
         )
     }
@@ -353,7 +361,8 @@ fun EditServiceEditScreenPreview() {
                 isAddingNew = false,
                 details = previewServiceUiState.details.copy(
                     securityKeys = listOf(100)
-                )),
+                )
+            ),
             securityKeyListUiState = previewSecurityListUiState
         )
     }

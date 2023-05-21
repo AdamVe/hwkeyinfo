@@ -10,6 +10,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -17,8 +18,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.Card
@@ -37,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
-import com.adamve.hwkeyinfo.ui.security_key.ServiceTag
 import com.adamve.hwkeyinfo.ui.security_key.securityKeyComparator
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 
@@ -95,9 +96,10 @@ fun ServiceCard(
     ServiceCardContent(
         serviceWithSecurityKeys = serviceWithSecurityKeys,
         isExpanded = expanded,
-        onExpandButtonClick = { expanded = !expanded},
+        onExpandButtonClick = { expanded = !expanded },
         modifier = modifier,
-        onClick = onClick)
+        onClick = onClick
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,7 +114,7 @@ fun ServiceCardContent(
     val service = serviceWithSecurityKeys.service
 
     Card(
-        onClick = { onClick(service.serviceId) },
+        onClick = { },
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
@@ -124,17 +126,33 @@ fun ServiceCardContent(
             ),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                service.serviceName,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                service.serviceUser,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-            )
+            Box(modifier.fillMaxWidth()) {
+                IconButton(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd),
+                    onClick = { onClick(service.serviceId) }
+                ) {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        stringResource(id = R.string.security_key_card_action_edit_content_description),
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                }
+                Column {
+                    Text(
+                        service.serviceName,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        service.serviceUser,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Light,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                    )
+                }
+            }
             SecurityKeysSection(
                 securityKeys = serviceWithSecurityKeys.securityKeys,
                 isExpanded = isExpanded,
@@ -185,9 +203,15 @@ fun SecurityKeysSection(
                         modifier = Modifier.height(18.dp)
                     ) {
                         if (isExpanded)
-                            Icon(Icons.Outlined.UnfoldLess, stringResource(id = R.string.service_card_action_unfold_key_list_content_description))
+                            Icon(
+                                Icons.Outlined.UnfoldLess,
+                                stringResource(id = R.string.service_card_action_unfold_key_list_content_description)
+                            )
                         else
-                            Icon(Icons.Outlined.UnfoldMore, stringResource(id = R.string.service_card_action_fold_key_list_content_description))
+                            Icon(
+                                Icons.Outlined.UnfoldMore,
+                                stringResource(id = R.string.service_card_action_fold_key_list_content_description)
+                            )
                     }
                 }
             }

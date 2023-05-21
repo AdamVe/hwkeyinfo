@@ -188,7 +188,8 @@ fun SecurityKeyEntryBody(
     onSecurityKeyValueChange: (SecurityKeyDetails) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .padding(horizontal = 16.dp)) {
         SecurityKeyInputForm(
             securityKeyUiState = securityKeyUiState,
             serviceListUiState = serviceListUiState,
@@ -255,12 +256,12 @@ fun SecurityKeyInputForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 0.dp)
+            .padding(bottom = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column {
-            Text(text = stringResource(R.string.security_key_input_form_information_header))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
