@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.Card
@@ -140,11 +142,23 @@ fun ServiceCardContent(
                             .size(24.dp)
                     )
                 }
+
                 Column {
-                    Text(
-                        service.serviceName,
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Outlined.Language,
+                            "",
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .height(with(LocalDensity.current) {
+                                    MaterialTheme.typography.titleLarge.fontSize.toDp()
+                                })
+                        )
+                        Text(
+                            service.serviceName,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
                     Text(
                         service.serviceUser,
                         style = MaterialTheme.typography.titleMedium.copy(
@@ -153,6 +167,7 @@ fun ServiceCardContent(
                         ),
                     )
                 }
+
             }
             SecurityKeysSection(
                 securityKeys = serviceWithSecurityKeys.securityKeys,
