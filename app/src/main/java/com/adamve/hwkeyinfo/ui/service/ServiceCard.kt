@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -169,15 +170,19 @@ fun SecurityKeysSection(
     isExpanded: Boolean = false,
     onExpandButtonClick: () -> Unit = {}
 ) {
+    val hasKeys = securityKeys.isNotEmpty()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
+            .clickable(
+                enabled = hasKeys,
+                onClick = onExpandButtonClick
+            )
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
             .padding(8.dp)
     ) {
-
-        val hasKeys = securityKeys.isNotEmpty()
 
         val keysLabel: @Composable () -> Unit = {
             val label = if (hasKeys) {
@@ -198,21 +203,16 @@ fun SecurityKeysSection(
                 )
 
                 if (hasKeys) {
-                    IconButton(
-                        onClick = onExpandButtonClick,
-                        modifier = Modifier.height(18.dp)
-                    ) {
-                        if (isExpanded)
-                            Icon(
-                                Icons.Outlined.UnfoldLess,
-                                stringResource(id = R.string.service_card_action_unfold_key_list_content_description)
-                            )
-                        else
-                            Icon(
-                                Icons.Outlined.UnfoldMore,
-                                stringResource(id = R.string.service_card_action_fold_key_list_content_description)
-                            )
-                    }
+                    if (isExpanded)
+                        Icon(
+                            Icons.Outlined.UnfoldLess,
+                            stringResource(id = R.string.service_card_action_unfold_key_list_content_description)
+                        )
+                    else
+                        Icon(
+                            Icons.Outlined.UnfoldMore,
+                            stringResource(id = R.string.service_card_action_fold_key_list_content_description)
+                        )
                 }
             }
         }

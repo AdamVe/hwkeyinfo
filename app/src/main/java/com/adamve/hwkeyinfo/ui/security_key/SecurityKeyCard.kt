@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -189,19 +190,25 @@ fun SecurityKeyCardContent(
                 )
             }
 
+            val hasServices = securityKeyWithServices.services.isNotEmpty()
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
+                    .clickable(
+                        enabled = hasServices,
+                        onClick = onExpandButtonClick
+                    )
                     .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
                     .padding(8.dp)
-            ) {
-
-                val hasServices = securityKeyWithServices.services.isNotEmpty()
-
+           ) {
                 val servicesLabel: @Composable () -> Unit = {
                     val label = if (hasServices) {
-                        stringResource(id = R.string.security_key_card_header_services, securityKeyWithServices.services.size)
+                        stringResource(
+                            id = R.string.security_key_card_header_services,
+                            securityKeyWithServices.services.size
+                        )
                     } else {
                         stringResource(id = R.string.security_key_card_header_no_services)
                     }
@@ -218,15 +225,16 @@ fun SecurityKeyCardContent(
                         )
 
                         if (hasServices) {
-                            IconButton(
-                                onClick = onExpandButtonClick,
-                                modifier = Modifier.height(18.dp)
-                            ) {
-                                if (isExpanded)
-                                    Icon(Icons.Outlined.UnfoldLess, stringResource(id = R.string.security_key_card_action_fold_service_list_content_description))
-                                else
-                                    Icon(Icons.Outlined.UnfoldMore, stringResource(id = R.string.security_key_card_action_unfold_service_list_content_description))
-                            }
+                            if (isExpanded)
+                                Icon(
+                                    Icons.Outlined.UnfoldLess,
+                                    stringResource(id = R.string.security_key_card_action_fold_service_list_content_description)
+                                )
+                            else
+                                Icon(
+                                    Icons.Outlined.UnfoldMore,
+                                    stringResource(id = R.string.security_key_card_action_unfold_service_list_content_description)
+                                )
                         }
                     }
                 }
