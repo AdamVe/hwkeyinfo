@@ -83,7 +83,7 @@ fun ServiceListScreenContent(
                 onClick = navigateToItemEntry,
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
             ) {
-                Icon(Icons.Filled.Add, "")
+                Icon(Icons.Filled.Add, stringResource(id = R.string.service_action_add_content_description))
             }
         },
         bottomBar = {

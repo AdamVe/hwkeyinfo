@@ -14,6 +14,14 @@
     <string name="security_key_input_form_key_description_title">Description</string>
     <string name="security_key_input_form_services_header">Services</string>
 
+    <string name="security_key_action_add_content_description">Create new key</string>
+
+    <string name="security_key_card_action_edit_content_description">Edit</string>
+    <string name="security_key_card_header_services">Services: %1$d</string>
+    <string name="security_key_card_header_no_services">No services</string>
+    <string name="security_key_card_action_fold_service_list_content_description">Fold service list</string>
+    <string name="security_key_card_action_unfold_service_list_content_description">Unfold service list</string>
+
     <string name="security_key_edit_screen_action_delete">Delete</string>
     <string name="security_key_edit_screen_action_update">Update</string>
     <string name="security_key_edit_screen_navigation_back">Back</string>
@@ -27,6 +35,14 @@
     <string name="service_input_form_name_title">Service Name</string>
     <string name="service_input_form_account_title">User/Account</string>
     <string name="service_input_form_security_keys_header">Security keys</string>
+
+    <string name="service_card_action_edit_content_description">Edit</string>
+    <string name="service_card_header_keys">Keys: %1$d</string>
+    <string name="service_card_header_no_keys">No keys</string>
+    <string name="service_card_action_fold_key_list_content_description">Fold key list</string>
+    <string name="service_card_action_unfold_key_list_content_description">Unfold key list</string>
+
+    <string name="service_action_add_content_description">Create new service</string>
 
     <string name="bottom_navigation_keys_label">Keys</string>
     <string name="bottom_navigation_services_label">Services</string>

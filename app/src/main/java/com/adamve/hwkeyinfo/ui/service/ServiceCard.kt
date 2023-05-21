@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -162,9 +163,9 @@ fun SecurityKeysSection(
 
         val keysLabel: @Composable () -> Unit = {
             val label = if (hasKeys) {
-                "Keys: ${securityKeys.size}"
+                stringResource(id = R.string.service_card_header_keys, securityKeys.size)
             } else {
-                "No Keys"
+                stringResource(id = R.string.service_card_header_no_keys)
             }
 
             Row(
@@ -184,9 +185,9 @@ fun SecurityKeysSection(
                         modifier = Modifier.height(18.dp)
                     ) {
                         if (isExpanded)
-                            Icon(Icons.Outlined.UnfoldLess, "Fold key list")
+                            Icon(Icons.Outlined.UnfoldLess, stringResource(id = R.string.service_card_action_unfold_key_list_content_description))
                         else
-                            Icon(Icons.Outlined.UnfoldMore, "Unfold key list")
+                            Icon(Icons.Outlined.UnfoldMore, stringResource(id = R.string.service_card_action_fold_key_list_content_description))
                     }
                 }
             }

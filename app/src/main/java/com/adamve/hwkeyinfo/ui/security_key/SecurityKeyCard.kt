@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -98,7 +99,7 @@ fun KeyIdentifier(
         ) {
             Icon(
                 Icons.Outlined.Edit,
-                "Edit",
+                stringResource(id = R.string.security_key_card_action_edit_content_description),
                 modifier = Modifier
                     .size(24.dp)
             )
@@ -200,9 +201,9 @@ fun SecurityKeyCardContent(
 
                 val servicesLabel: @Composable () -> Unit = {
                     val label = if (hasServices) {
-                        "Services: ${securityKeyWithServices.services.size}"
+                        stringResource(id = R.string.security_key_card_header_services, securityKeyWithServices.services.size)
                     } else {
-                        "No services"
+                        stringResource(id = R.string.security_key_card_header_no_services)
                     }
 
                     Row(
@@ -222,9 +223,9 @@ fun SecurityKeyCardContent(
                                 modifier = Modifier.height(18.dp)
                             ) {
                                 if (isExpanded)
-                                    Icon(Icons.Outlined.UnfoldLess, "Fold service list")
+                                    Icon(Icons.Outlined.UnfoldLess, stringResource(id = R.string.security_key_card_action_fold_service_list_content_description))
                                 else
-                                    Icon(Icons.Outlined.UnfoldMore, "Unfold service list")
+                                    Icon(Icons.Outlined.UnfoldMore, stringResource(id = R.string.security_key_card_action_unfold_service_list_content_description))
                             }
                         }
                     }

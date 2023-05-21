@@ -260,7 +260,7 @@ fun SecurityKeyInputForm(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column {
-            Text(text = stringResource(R.string.security_key_input_form_information_header) + "(key id: ${securityKeyDetails.id})")
+            Text(text = stringResource(R.string.security_key_input_form_information_header))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),

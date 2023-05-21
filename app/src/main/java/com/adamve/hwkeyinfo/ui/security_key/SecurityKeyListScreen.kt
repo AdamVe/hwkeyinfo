@@ -95,7 +95,7 @@ fun SecurityKeyListScreenContent(
                 onClick = navigateToItemEntry,
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
             ) {
-                Icon(Icons.Filled.Add, "")
+                Icon(Icons.Filled.Add, stringResource(id = R.string.security_key_action_add_content_description))
             }
         },
         bottomBar = {
