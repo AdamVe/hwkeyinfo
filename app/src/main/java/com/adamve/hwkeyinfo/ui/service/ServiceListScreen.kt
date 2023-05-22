@@ -4,30 +4,36 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -72,18 +78,29 @@ fun ServiceListScreenContent(
     navigateToSecurityKeyList: () -> Unit = {},
     serviceListUiState: ServiceListUiState = ServiceListUiState()
 ) {
+    val itemList = serviceListUiState
+        .serviceList
+        .sortedWith(serviceWithSecurityKeysComparator)
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = ServiceListDestination.titleRes)) },
-            )
+            if (itemList.isNotEmpty()) {
+                TopAppBar(
+                    title = { Text(stringResource(id = ServiceListDestination.titleRes)) },
+                )
+            }
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = navigateToItemEntry,
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            ) {
-                Icon(Icons.Filled.Add, stringResource(id = R.string.service_action_add_content_description))
+            if (itemList.isNotEmpty()) {
+                SmallFloatingActionButton(
+                    onClick = navigateToItemEntry,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.service_action_add_content_description)
+                    )
+                }
             }
         },
         bottomBar = {
@@ -112,13 +129,18 @@ fun ServiceListScreenContent(
 
         }
     ) { innerPadding ->
-        ServiceListScreenBody(
-            itemList = serviceListUiState
-                .serviceList
-                .sortedWith(serviceWithSecurityKeysComparator),
-            onItemClick = navigateToItemUpdate,
-            modifier = modifier.padding(innerPadding)
-        )
+        if (itemList.isEmpty()) {
+            ServiceEmptyListScreenBody(
+                modifier = modifier.padding(innerPadding),
+                navigateToItemEntry = navigateToItemEntry,
+            )
+        } else {
+            ServiceListScreenBody(
+                itemList = itemList,
+                onItemClick = navigateToItemUpdate,
+                modifier = modifier.padding(innerPadding)
+            )
+        }
     }
 }
 
@@ -150,13 +172,57 @@ fun ServiceListScreenBody(
     }
 }
 
+@Composable
+fun ServiceEmptyListScreenBody(
+    modifier: Modifier = Modifier,
+    navigateToItemEntry: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier
+            .fillMaxHeight(0.7f)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            stringResource(id = R.string.service_list_screen_add_label),
+            modifier = Modifier.padding(bottom = 16.dp),
+            style = MaterialTheme.typography.displaySmall,
+            textAlign = TextAlign.Center
+        )
+        FilledIconButton(
+            onClick = navigateToItemEntry,
+            shape = RoundedCornerShape(8.dp),
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            )
+        ) {
+            Icon(
+                Icons.Filled.Add,
+                stringResource(id = R.string.service_action_add_content_description)
+            )
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ServiceListScreenPreview() {
     HwKeyInfoTheme {
         ServiceListScreenContent(
-            serviceListUiState = previewServiceListUiState
+            serviceListUiState = ServiceListUiState(previewServicesWithSecurityKeys),
+        )
+    }
+}
+
+@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun ServiceEmptyListScreenPreview() {
+    HwKeyInfoTheme {
+        ServiceListScreenContent(
+            serviceListUiState = ServiceListUiState(listOf()),
         )
     }
 }
@@ -184,9 +250,5 @@ val previewServicesWithSecurityKeys = listOf(
         Service(serviceName = "oath account", serviceUser = "user@email.com"),
         listOf(previewSecurityKeys[0], previewSecurityKeys[1])
     )
-)
-
-val previewServiceListUiState = ServiceListUiState(
-    previewServicesWithSecurityKeys
 )
 

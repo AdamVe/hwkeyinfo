@@ -5,31 +5,36 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -83,19 +88,29 @@ fun SecurityKeyListScreenContent(
     navigateToServiceList: () -> Unit = {},
     securityKeyListUiState: SecurityKeyListUiState = SecurityKeyListUiState(),
 ) {
+    val itemList = securityKeyListUiState
+        .itemList
+        .sortedWith(securityKeyWithServicesComparator)
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = SecurityKeyListDestination.titleRes)) },
-            )
+            if (itemList.isNotEmpty()) {
+                TopAppBar(
+                    title = { Text(stringResource(id = SecurityKeyListDestination.titleRes)) },
+                )
+            }
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = navigateToItemEntry,
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            ) {
-                Icon(Icons.Filled.Add, stringResource(id = R.string.security_key_action_add_content_description))
+            if (itemList.isNotEmpty()) {
+                SmallFloatingActionButton(
+                    onClick = navigateToItemEntry,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.security_key_action_add_content_description)
+                    )
+                }
             }
         },
         bottomBar = {
@@ -124,13 +139,18 @@ fun SecurityKeyListScreenContent(
 
         }
     ) { innerPadding ->
-        SecurityKeyListScreenBody(
-            itemList = securityKeyListUiState
-                .itemList
-                .sortedWith(securityKeyWithServicesComparator),
-            onItemClick = navigateToItemUpdate,
-            modifier = modifier.padding(innerPadding)
-        )
+        if (itemList.isEmpty()) {
+            SecurityKeyEmptyListScreenBody(
+                navigateToItemEntry = navigateToItemEntry,
+                modifier = modifier.padding(innerPadding)
+            )
+        } else {
+            SecurityKeyListScreenBody(
+                itemList = itemList,
+                onItemClick = navigateToItemUpdate,
+                modifier = modifier.padding(innerPadding)
+            )
+        }
     }
 }
 
@@ -145,6 +165,8 @@ fun SecurityKeyListScreenBody(
         modifier = modifier
             .fillMaxSize()
     ) {
+
+
         LazyColumn(
             Modifier
                 .fillMaxWidth(),
@@ -162,13 +184,43 @@ fun SecurityKeyListScreenBody(
     }
 }
 
-@Preview(
-    showSystemUi = true,
-    device = Devices.PIXEL_4_XL,
-    uiMode = UI_MODE_NIGHT_NO
-)
 @Composable
-fun LightSecurityKeyListPreview() {
+fun SecurityKeyEmptyListScreenBody(
+    modifier: Modifier = Modifier,
+    navigateToItemEntry: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier
+            .fillMaxHeight(0.7f)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            stringResource(id = R.string.security_key_list_screen_add_label),
+            modifier = Modifier.padding(bottom = 16.dp),
+            style = MaterialTheme.typography.displaySmall,
+            textAlign = TextAlign.Center
+        )
+        FilledIconButton(
+            onClick = navigateToItemEntry,
+            shape = RoundedCornerShape(8.dp),
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            )
+        ) {
+            Icon(
+                Icons.Filled.Add,
+                stringResource(id = R.string.security_key_action_add_content_description)
+            )
+        }
+    }
+}
+
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun SecurityKeyListPreview() {
     HwKeyInfoTheme {
         SecurityKeyListScreenContent(
             securityKeyListUiState = previewSecurityKeyListUiState,
@@ -176,19 +228,17 @@ fun LightSecurityKeyListPreview() {
     }
 }
 
-@Preview(
-    showSystemUi = true,
-    device = Devices.PIXEL_4_XL,
-    uiMode = UI_MODE_NIGHT_YES
-)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun DarkSecurityKeyListPreview() {
+fun EmptySecurityKeyListPreview() {
     HwKeyInfoTheme {
         SecurityKeyListScreenContent(
-            securityKeyListUiState = previewSecurityKeyListUiState,
+            securityKeyListUiState = SecurityKeyListUiState(listOf()),
         )
     }
 }
+
 
 val previewSecurityKeyListUiState = SecurityKeyListUiState(
     itemList = listOf(

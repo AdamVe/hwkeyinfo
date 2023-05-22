@@ -14,6 +14,7 @@
     <string name="security_key_input_form_key_description_title">Description</string>
     <string name="security_key_input_form_services_header">Services</string>
 
+    <string name="security_key_list_screen_add_label">Create security key</string>
     <string name="security_key_action_add_content_description">Create new key</string>
 
     <string name="security_key_card_action_edit_content_description">Edit</string>
@@ -42,6 +43,7 @@
     <string name="service_card_action_fold_key_list_content_description">Fold key list</string>
     <string name="service_card_action_unfold_key_list_content_description">Unfold key list</string>
 
+    <string name="service_list_screen_add_label">Add service</string>
     <string name="service_action_add_content_description">Create new service</string>
 
     <string name="bottom_navigation_keys_label">Keys</string>
