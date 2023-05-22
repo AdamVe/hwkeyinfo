@@ -2,6 +2,7 @@ package com.adamve.hwkeyinfo.ui.security_key
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -25,12 +29,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -88,16 +95,80 @@ fun SecurityKeyListScreenContent(
     navigateToServiceList: () -> Unit = {},
     securityKeyListUiState: SecurityKeyListUiState = SecurityKeyListUiState(),
 ) {
+
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var searchActive by rememberSaveable { mutableStateOf(false) }
+
     val itemList = securityKeyListUiState
         .itemList
         .sortedWith(securityKeyWithServicesComparator)
 
+    val filteredList = itemList.filter {
+        searchQuery.isNotBlank() && (it.securityKey.name.contains(searchQuery, ignoreCase = true)
+                || it.securityKey.type.contains(searchQuery, ignoreCase = true)
+                || it.securityKey.description.contains(searchQuery, ignoreCase = true))
+    }
+
     Scaffold(
         topBar = {
             if (itemList.isNotEmpty()) {
-                TopAppBar(
-                    title = { Text(stringResource(id = SecurityKeyListDestination.titleRes)) },
-                )
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearch = {
+                        searchQuery = it
+                        searchActive = false
+                    },
+                    active = searchActive,
+                    onActiveChange = { searchActive = it },
+                    leadingIcon = {
+                        if (searchActive) {
+                            Icon(Icons.Outlined.ArrowBack, "",
+                                modifier = Modifier.clickable {
+                                    searchActive = false
+                                    searchQuery = ""
+                                })
+                        } else {
+                            Icon(Icons.Outlined.Search, "")
+                        }
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotBlank()) {
+                            Icon(
+                                Icons.Outlined.Close,
+                                "",
+                                modifier = Modifier.clickable {
+                                    searchActive = false
+                                    searchQuery = ""
+                                })
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = if (searchActive) {
+                                0.dp
+                            } else {
+                                16.dp
+                            }
+                        ),
+                    placeholder = {
+                        Text("Search for key")
+                    }
+                ) {
+                    LazyColumn {
+                        items(filteredList) { securityKeyWithServices ->
+                            SecurityKeySearchResultCard(
+                                securityKeyWithServices,
+                                onClick = {
+                                    searchActive = false
+                                    navigateToItemUpdate(securityKeyWithServices.securityKey.id)
+                                }
+                            )
+                        }
+                    }
+                }
             }
         },
         floatingActionButton = {
@@ -146,7 +217,11 @@ fun SecurityKeyListScreenContent(
             )
         } else {
             SecurityKeyListScreenBody(
-                itemList = itemList,
+                itemList = if (searchQuery.isBlank()) {
+                    itemList
+                } else {
+                    filteredList
+                },
                 onItemClick = navigateToItemUpdate,
                 modifier = modifier.padding(innerPadding)
             )
