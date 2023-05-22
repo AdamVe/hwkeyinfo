@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyRepository
 import com.adamve.hwkeyinfo.data.Service
+import com.adamve.hwkeyinfo.data.ServiceRepository
 import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,13 +21,15 @@ import kotlinx.coroutines.launch
 
 class ServiceEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val repository: SecurityKeyRepository
+    securityKeyRepository: SecurityKeyRepository,
+    private val serviceRepository: ServiceRepository
+
 ) : ViewModel() {
     var serviceUiState by mutableStateOf(ServiceUiState())
         private set
 
     val securityKeyListUiState: StateFlow<SecurityKeyListUiState> =
-        repository.getAllSecurityKeysStream()
+        securityKeyRepository.getAllSecurityKeysStream()
             .map { SecurityKeyListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
@@ -40,7 +43,7 @@ class ServiceEditViewModel(
     init {
         viewModelScope.launch {
             serviceUiState = if (serviceId != null) {
-                repository.getServiceWithSecurityKeysStream(serviceId)
+                serviceRepository.getServiceWithSecurityKeysStream(serviceId)
                     .filterNotNull()
                     .first()
                     .toServiceUiState(true)
@@ -51,20 +54,20 @@ class ServiceEditViewModel(
     }
 
     suspend fun deleteService() {
-        repository.deleteService(serviceUiState.details.toService())
+        serviceRepository.deleteService(serviceUiState.details.toService())
     }
 
     suspend fun saveService() {
         if (validateInput()) {
             val service = serviceUiState.details.toService()
-            repository.insertService(service, serviceUiState.details.securityKeys)
+            serviceRepository.insertService(service, serviceUiState.details.securityKeys)
         }
     }
 
     suspend fun updateService() {
         if (validateInput(serviceUiState.details)) {
             val service = serviceUiState.details.toService()
-            repository.updateService(service, serviceUiState.details.securityKeys)
+            serviceRepository.updateService(service, serviceUiState.details.securityKeys)
         }
     }
 
@@ -109,8 +112,7 @@ data class ServiceDetails(
 fun ServiceDetails.toService(): Service = Service(
     serviceId = serviceId,
     serviceName = serviceName,
-    serviceUser = serviceUser,
-    serviceDetails = serviceDetails
+    serviceUser = serviceUser
 )
 
 fun ServiceWithSecurityKeys.toServiceUiState(isEntryValid: Boolean = false): ServiceUiState =
@@ -123,6 +125,5 @@ fun ServiceWithSecurityKeys.toServiceDetails(): ServiceDetails = ServiceDetails(
     serviceId = service.serviceId,
     serviceName = service.serviceName,
     serviceUser = service.serviceUser,
-    serviceDetails = service.serviceDetails,
     securityKeys = securityKeys.map { it.id }
 )

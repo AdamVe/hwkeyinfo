@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.UnfoldLess
@@ -87,7 +86,6 @@ fun SecurityKeyTag(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceCard(
     serviceWithSecurityKeys: ServiceWithSecurityKeys,

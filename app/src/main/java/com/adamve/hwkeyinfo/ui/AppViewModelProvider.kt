@@ -16,7 +16,8 @@ object AppViewModelProvider {
         initializer {
             SecurityKeyEditViewModel(
                 this.createSavedStateHandle(),
-                hwKeyInfoApplication().container.securityKeyRepository
+                hwKeyInfoApplication().container.securityKeyRepository,
+                hwKeyInfoApplication().container.serviceRepository
             )
         }
 
@@ -25,13 +26,14 @@ object AppViewModelProvider {
         }
 
         initializer {
-            ServiceListViewModel(hwKeyInfoApplication().container.securityKeyRepository)
+            ServiceListViewModel(hwKeyInfoApplication().container.serviceRepository)
         }
 
         initializer {
             ServiceEditViewModel(
                 this.createSavedStateHandle(),
-                hwKeyInfoApplication().container.securityKeyRepository
+                hwKeyInfoApplication().container.securityKeyRepository,
+                hwKeyInfoApplication().container.serviceRepository,
             )
         }
     }

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -202,7 +200,7 @@ fun SecurityKeyCardContent(
                     )
                     .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
                     .padding(8.dp)
-           ) {
+            ) {
                 val servicesLabel: @Composable () -> Unit = {
                     val label = if (hasServices) {
                         stringResource(
@@ -297,7 +295,7 @@ fun SecurityKeyCardPreview() {
 @Preview
 @Composable
 fun SecurityKeyWithoutNameCardPreview() {
-    val key = SecurityKey(0, "", "Key nickname", "Key type", "ref", "Key description")
+    val key = SecurityKey(0, "", "Key type", "Key description")
 
     HwKeyInfoTheme {
         SecurityKeyCard(SecurityKeyWithServices(securityKey = key, services = listOf()))
@@ -336,18 +334,14 @@ fun ExpandedSecurityKeyCardPreview() {
 val previewSecurityKeyWithoutDescription = SecurityKey(
     0,
     "Private backup Key",
-    "HW Key Nick",
     "HW Key Type",
-    "ref",
     ""
 )
 
 val previewSecurityKey = SecurityKey(
     0,
     "Private backup Key",
-    "HW Key Nick",
     "HW Key Type",
-    "ref",
     "This is my main backup key and it is stored in bank X ref 123."
 )
 

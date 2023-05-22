@@ -15,6 +15,8 @@ import androidx.room.RoomDatabase
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun securityKeyDao(): SecurityKeyDao
 
+    abstract fun serviceDao(): ServiceDao
+
     companion object {
         private var INSTANCE: AppRoomDatabase? = null
 

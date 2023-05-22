@@ -10,6 +10,7 @@ import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyRepository
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
 import com.adamve.hwkeyinfo.data.Service
+import com.adamve.hwkeyinfo.data.ServiceRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -20,13 +21,14 @@ import kotlinx.coroutines.launch
 
 class SecurityKeyEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val securityKeyRepository: SecurityKeyRepository
+    private val securityKeyRepository: SecurityKeyRepository,
+    serviceRepository: ServiceRepository
 ) : ViewModel() {
     var securityKeyUiState by mutableStateOf(SecurityKeyUiState())
         private set
 
     val serviceListUiState: StateFlow<ServiceListUiState> =
-        securityKeyRepository.getAllServicesStream()
+        serviceRepository.getAllServicesStream()
             .map { ServiceListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
