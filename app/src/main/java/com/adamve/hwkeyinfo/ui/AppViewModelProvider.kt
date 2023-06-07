@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.adamve.hwkeyinfo.HwKeyInfoApplication
+import com.adamve.hwkeyinfo.ui.home.HomeScreenViewModel
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditViewModel
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListViewModel
 import com.adamve.hwkeyinfo.ui.service.ServiceEditViewModel
@@ -27,6 +28,13 @@ object AppViewModelProvider {
 
         initializer {
             ServiceListViewModel(hwKeyInfoApplication().container.serviceRepository)
+        }
+
+        initializer {
+            HomeScreenViewModel(
+                hwKeyInfoApplication().container.securityKeyRepository,
+                hwKeyInfoApplication().container.serviceRepository
+            )
         }
 
         initializer {

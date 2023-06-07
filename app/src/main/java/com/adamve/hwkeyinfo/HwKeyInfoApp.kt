@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.adamve.hwkeyinfo.ui.home.HomeScreen
+import com.adamve.hwkeyinfo.ui.home.HomeScreenDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditScreen
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListDestination
@@ -29,7 +31,16 @@ fun HwKeyInfoApp() {
 fun HwKeyInfoNavHost(
     navController: NavHostController,
 ) {
-    NavHost(navController = navController, startDestination = SecurityKeyListDestination.route) {
+    NavHost(navController = navController, startDestination = HomeScreenDestination.route) {
+        composable(route = HomeScreenDestination.route) {
+            HomeScreen(
+                navigateToSecurityKeysScreen = { navController.navigate(SecurityKeyListDestination.route) },
+                navigateToServiceScreen = { navController.navigate(ServiceListDestination.route) },
+                navigateToSecurityKey = { navController.navigate("${SecurityKeyEditDestination.route}/$it") },
+                navigateToService = { navController.navigate("${ServiceEditDestination.route}/$it") },
+            )
+        }
+
         composable(route = SecurityKeyListDestination.route) {
             SecurityKeyListScreen(
                 navigateToItemEntry = { navController.navigate(SecurityKeyEditDestination.addKeyRoute) },
