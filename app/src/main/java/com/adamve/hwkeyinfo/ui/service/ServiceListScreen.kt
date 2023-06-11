@@ -14,11 +14,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -55,7 +57,7 @@ fun ServiceListScreen(
     modifier: Modifier = Modifier,
     navigateToItemEntry: () -> Unit = {},
     navigateToItemUpdate: (Long) -> Unit = {},
-    navigateToSecurityKeyList: () -> Unit = {},
+    navigateBack: () -> Unit,
     viewModel: ServiceListViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
@@ -64,7 +66,7 @@ fun ServiceListScreen(
         modifier = modifier,
         navigateToItemEntry = navigateToItemEntry,
         navigateToItemUpdate = navigateToItemUpdate,
-        navigateToSecurityKeyList = navigateToSecurityKeyList,
+        navigateBack = navigateBack,
         serviceListUiState = serviceListUiState
     )
 }
@@ -75,7 +77,7 @@ fun ServiceListScreenContent(
     modifier: Modifier = Modifier,
     navigateToItemEntry: () -> Unit = {},
     navigateToItemUpdate: (Long) -> Unit = {},
-    navigateToSecurityKeyList: () -> Unit = {},
+    navigateBack: () -> Unit = {},
     serviceListUiState: ServiceListUiState = ServiceListUiState()
 ) {
     val itemList = serviceListUiState
@@ -87,6 +89,11 @@ fun ServiceListScreenContent(
             if (itemList.isNotEmpty()) {
                 TopAppBar(
                     title = { Text(stringResource(id = ServiceListDestination.titleRes)) },
+                    navigationIcon = {
+                        IconButton(onClick = navigateBack) {
+                            Icon(Icons.Filled.ArrowBack, "backIcon")
+                        }
+                    }
                 )
             }
         },
@@ -102,31 +109,6 @@ fun ServiceListScreenContent(
                     )
                 }
             }
-        },
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = false,
-                    onClick = navigateToSecurityKeyList,
-                    label = { Text(stringResource(R.string.bottom_navigation_keys_label)) },
-                    icon = {
-                        Icon(
-                            Icons.Default.Lock,
-                            stringResource(R.string.bottom_navigation_keys_content_description)
-                        )
-                    })
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { },
-                    label = { Text(stringResource(R.string.bottom_navigation_services_label)) },
-                    icon = {
-                        Icon(
-                            Icons.Default.List,
-                            stringResource(R.string.bottom_navigation_services_content_description)
-                        )
-                    })
-            }
-
         }
     ) { innerPadding ->
         if (itemList.isEmpty()) {

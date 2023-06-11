@@ -2,28 +2,39 @@ package com.adamve.hwkeyinfo.ui.home
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +59,7 @@ import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListUiState
+import com.adamve.hwkeyinfo.ui.security_key.SecurityKeySearchResultCard
 import com.adamve.hwkeyinfo.ui.service.HomeServiceCard
 import com.adamve.hwkeyinfo.ui.service.ServiceListUiState
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
@@ -55,7 +68,6 @@ object HomeScreenDestination : AppDestination {
     override val route = "home"
     override val titleRes = R.string.app_page_title_home
 }
-
 
 val securityKeyWithServicesComparator = Comparator<SecurityKeyWithServices> { l, r ->
     (l.securityKey.name + l.securityKey.type).uppercase()
@@ -67,7 +79,9 @@ fun HomeScreen(
     navigateToSecurityKeysScreen: () -> Unit,
     navigateToServiceScreen: () -> Unit,
     navigateToSecurityKey: (Long) -> Unit,
+    navigateToSecurityKeyEntry: () -> Unit,
     navigateToService: (Long) -> Unit,
+    navigateToServiceEntry: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -79,7 +93,9 @@ fun HomeScreen(
         navigateToSecurityKeysScreen = navigateToSecurityKeysScreen,
         navigateToServiceScreen = navigateToServiceScreen,
         navigateToSecurityKey = navigateToSecurityKey,
+        navigateToSecurityKeyEntry = navigateToSecurityKeyEntry,
         navigateToService = navigateToService,
+        navigateToServiceEntry = navigateToServiceEntry,
         securityKeyListUiState = securityKeyListUiState,
         serviceListUiState = serviceListUiState
     )
@@ -92,7 +108,9 @@ fun HomeScreenContent(
     navigateToSecurityKeysScreen: () -> Unit = {},
     navigateToServiceScreen: () -> Unit = {},
     navigateToSecurityKey: (Long) -> Unit = {},
+    navigateToSecurityKeyEntry: () -> Unit = {},
     navigateToService: (Long) -> Unit = {},
+    navigateToServiceEntry: () -> Unit = {},
     securityKeyListUiState: SecurityKeyListUiState = SecurityKeyListUiState(),
     serviceListUiState: ServiceListUiState = ServiceListUiState(),
 ) {
@@ -115,76 +133,92 @@ fun HomeScreenContent(
             if (!searchActive)
                 TopAppBar(
                     title = { Text(stringResource(id = R.string.app_page_title_key_list)) },
-//                    actions = {
-//                        IconButton(onClick = { searchActive = true }) {
-//                            Icon(
-//                                imageVector = Icons.Filled.Search,
-//                                contentDescription = "Localized description"
-//                            )
-//                        }
-//                    }
+                    actions = {
+                        IconButton(onClick = { searchActive = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    }
                 )
-
-        },
-        floatingActionButton = {
-            if (itemList.isNotEmpty()) {
-                FloatingActionButton(
-                    onClick = {}, //navigateToItemEntry,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            else {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearch = {
+                        searchQuery = it
+                        searchActive = false
+                    },
+                    active = searchActive,
+                    onActiveChange = { searchActive = it },
+                    leadingIcon = {
+                        if (searchActive) {
+                            Icon(Icons.Outlined.ArrowBack, "",
+                                modifier = Modifier.clickable {
+                                    searchActive = false
+                                    searchQuery = ""
+                                })
+                        } else {
+                            Icon(Icons.Outlined.Search, "")
+                        }
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotBlank()) {
+                            Icon(
+                                Icons.Outlined.Close,
+                                "",
+                                modifier = Modifier.clickable {
+                                    searchActive = false
+                                    searchQuery = ""
+                                })
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = if (searchActive) {
+                                0.dp
+                            } else {
+                                16.dp
+                            }
+                        ),
+                    placeholder = {
+                        Text("Search for key")
+                    }
                 ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        stringResource(id = R.string.security_key_action_add_content_description)
-                    )
+                    LazyColumn {
+                        items(filteredList) { securityKeyWithServices ->
+                            SecurityKeySearchResultCard(
+                                securityKeyWithServices,
+                                onClick = {
+                                    searchActive = false
+                                    navigateToSecurityKey(securityKeyWithServices.securityKey.id)
+                                }
+                            )
+                        }
+                    }
                 }
             }
-        },
-//        bottomBar = {
-//            NavigationBar {
-//                NavigationBarItem(
-//                    selected = true,
-//                    onClick = { },
-//                    label = { Text(stringResource(R.string.bottom_navigation_keys_label)) },
-//                    icon = {
-//                        Icon(
-//                            Icons.Default.Lock,
-//                            stringResource(R.string.bottom_navigation_keys_content_description)
-//                        )
-//                    })
-//                NavigationBarItem(
-//                    selected = false,
-//                    onClick = navigateToServiceList,
-//                    label = { Text(stringResource(R.string.bottom_navigation_services_label)) },
-//                    icon = {
-//                        Icon(
-//                            Icons.Default.List,
-//                            stringResource(R.string.bottom_navigation_services_content_description)
-//                        )
-//                    })
-//            }
-//
-//        }
-    ) { innerPadding ->
-        if (itemList.isEmpty()) {
-            EmptyHomeScreenBody(
-                navigateToItemEntry = {}, //navigateToItemEntry,
-                modifier = modifier.padding(innerPadding)
-            )
-        } else {
-            HomeScreenBody(
-                securityKeyWithServicesList = if (searchQuery.isBlank()) {
-                    itemList
-                } else {
-                    filteredList
-                },
-                serviceWithKeysList = serviceListUiState.serviceList,
-                navigateToSecurityKeysScreen = navigateToSecurityKeysScreen,
-                navigateToServiceScreen = navigateToServiceScreen,
-                onKeyItemClick = navigateToSecurityKey,
-                onServiceItemClick = navigateToService,
-                modifier = modifier.padding(innerPadding)
-            )
+
         }
+    ) { innerPadding ->
+        HomeScreenBody(
+            securityKeyWithServicesList = if (searchQuery.isBlank()) {
+                itemList
+            } else {
+                filteredList
+            },
+            serviceWithKeysList = serviceListUiState.serviceList,
+            navigateToSecurityKeysScreen = navigateToSecurityKeysScreen,
+            navigateToServiceScreen = navigateToServiceScreen,
+            onKeyItemClick = navigateToSecurityKey,
+            navigateToSecurityKeyEntry = navigateToSecurityKeyEntry,
+            onServiceItemClick = navigateToService,
+            navigateToServiceEntry = navigateToServiceEntry,
+            modifier = modifier.padding(innerPadding)
+        )
     }
 }
 
@@ -194,34 +228,71 @@ fun KeyRow(
     modifier: Modifier = Modifier,
     navigateToSecurityKeysScreen: () -> Unit = {},
     onKeyItemClick: (Long) -> Unit = {},
+    navigateToSecurityKeyEntry: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
-    Row(horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(horizontal = 8.dp).fillMaxWidth()) {
-        Text(
-            text = "Keys",
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Text(
-            text = "Show all",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.clickable {
-                navigateToSecurityKeysScreen()
+    Column {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(id = R.string.home_page_keys_row_title),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                if (securityKeyWithServicesList.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.security_key_action_add_content_description),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.tertiaryContainer)
+                            .clickable { navigateToSecurityKeysScreen() }
+                    )
+                }
             }
-        )
-    }
-    LazyRow(
-        Modifier
-            .fillMaxWidth(),
-        contentPadding = PaddingValues(4.dp),
-        state = listState
-    ) {
-        items(securityKeyWithServicesList) {
-            HomeSecurityKeyCard(
-                it,
-                onClick = onKeyItemClick
+            Icon(
+                Icons.Outlined.ArrowForward,
+                "",
+                modifier = Modifier.clickable { navigateToSecurityKeysScreen() }
             )
+        }
+
+        if (securityKeyWithServicesList.isEmpty()) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                FloatingActionButton(
+                    onClick = navigateToSecurityKeyEntry,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.security_key_action_add_content_description)
+                    )
+                }
+            }
+        } else {
+            LazyRow(
+                Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(4.dp),
+                state = listState
+            ) {
+                items(securityKeyWithServicesList) {
+                    HomeSecurityKeyCard(
+                        it,
+                        onClick = onKeyItemClick
+                    )
+                }
+            }
         }
     }
 }
@@ -232,35 +303,72 @@ fun ServiceRow(
     modifier: Modifier = Modifier,
     navigateToServiceScreen: () -> Unit = {},
     onServiceItemClick: (Long) -> Unit = {},
+    navigateToServiceEntry: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
-    Row(horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(horizontal = 8.dp).fillMaxWidth()) {
-        Text(
-            text = "Services",
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Text(
-            text = "Show all",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.clickable {
-                navigateToServiceScreen()
+    Column {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(id = R.string.home_page_services_row_title),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                if (serviceWithKeysList.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.security_key_action_add_content_description),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.tertiaryContainer)
+                            .clickable { navigateToServiceEntry() }
+                    )
+                }
             }
-        )
-    }
 
-    LazyRow(
-        Modifier
-            .fillMaxWidth(),
-        contentPadding = PaddingValues(4.dp),
-        state = listState
-    ) {
-        items(serviceWithKeysList) {
-            HomeServiceCard(
-                it,
-                onClick = onServiceItemClick
+            Icon(
+                Icons.Outlined.ArrowForward,
+                "",
+                modifier = Modifier.clickable { navigateToServiceScreen() }
             )
+        }
+
+        if (serviceWithKeysList.isEmpty()) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                FloatingActionButton(
+                    onClick = navigateToServiceEntry,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.security_key_action_add_content_description)
+                    )
+                }
+            }
+        } else {
+            LazyRow(
+                Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(4.dp),
+                state = listState
+            ) {
+                items(serviceWithKeysList) {
+                    HomeServiceCard(
+                        it,
+                        onClick = onServiceItemClick
+                    )
+                }
+            }
         }
     }
 }
@@ -273,24 +381,25 @@ fun HomeScreenBody(
     navigateToSecurityKeysScreen: () -> Unit,
     navigateToServiceScreen: () -> Unit,
     onKeyItemClick: (Long) -> Unit = {},
-    onServiceItemClick: (Long) -> Unit = {}
+    navigateToSecurityKeyEntry: () -> Unit = {},
+    onServiceItemClick: (Long) -> Unit = {},
+    navigateToServiceEntry: () -> Unit = {},
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.Top
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         KeyRow(
             securityKeyWithServicesList = securityKeyWithServicesList,
-            modifier = modifier,
             navigateToSecurityKeysScreen = navigateToSecurityKeysScreen,
-            onKeyItemClick = onKeyItemClick
+            onKeyItemClick = onKeyItemClick,
+            navigateToSecurityKeyEntry = navigateToSecurityKeyEntry
         )
         ServiceRow(
             serviceWithKeysList = serviceWithKeysList,
-            modifier = modifier,
             navigateToServiceScreen = navigateToServiceScreen,
-            onServiceItemClick = onServiceItemClick
+            onServiceItemClick = onServiceItemClick,
+            navigateToServiceEntry = navigateToServiceEntry
         )
     }
 }
@@ -351,22 +460,30 @@ fun EmptyHomeScreenPreview() {
     }
 }
 
+
+val homeScreenPreviewServices = listOf(
+    Service(serviceId = 0, serviceName = "Service 1", serviceUser = "username@service.com"),
+    Service(serviceId = 1, serviceName = "Service 2", serviceUser = "some_user@service2.org"),
+    Service(serviceId = 2, serviceName = "Long service 3 name", serviceUser = "Simple user name"),
+    Service(serviceId = 3, serviceName = "Service 4", serviceUser = "user"),
+)
+
 val previewServiceListUiState = ServiceListUiState(
     serviceList = listOf(
         ServiceWithSecurityKeys(
-            Service(serviceId = 0, serviceName = "Service 1", serviceUser = "user"),
+            homeScreenPreviewServices[0],
             emptyList()
         ),
         ServiceWithSecurityKeys(
-            Service(serviceId = 0, serviceName = "Service 1", serviceUser = "user"),
+            homeScreenPreviewServices[1],
             emptyList()
         ),
         ServiceWithSecurityKeys(
-            Service(serviceId = 0, serviceName = "Service 1", serviceUser = "user"),
+            homeScreenPreviewServices[2],
             emptyList()
         ),
         ServiceWithSecurityKeys(
-            Service(serviceId = 0, serviceName = "Service 1", serviceUser = "user"),
+            homeScreenPreviewServices[3],
             emptyList()
         )
     )
@@ -376,7 +493,7 @@ val previewSecurityKeyListUiState = SecurityKeyListUiState(
     itemList = listOf(
         SecurityKeyWithServices(
             SecurityKey(name = "Main key", type = "HW Key Type 1"),
-            listOf()
+            listOf(homeScreenPreviewServices[1], homeScreenPreviewServices[2])
         ),
         SecurityKeyWithServices(
             SecurityKey(name = "Backup key", type = "HW Key Type 2"),
@@ -402,66 +519,3 @@ val previewSecurityKeyListUiState = SecurityKeyListUiState(
 
     )
 )
-
-
-// TODO
-// Searchbar in AppTopBar
-//else {
-//    SearchBar(
-//        query = searchQuery,
-//        onQueryChange = { searchQuery = it },
-//        onSearch = {
-//            searchQuery = it
-//            searchActive = false
-//        },
-//        active = searchActive,
-//        onActiveChange = { searchActive = it },
-//        leadingIcon = {
-//            if (searchActive) {
-//                Icon(Icons.Outlined.ArrowBack, "",
-//                    modifier = Modifier.clickable {
-//                        searchActive = false
-//                        searchQuery = ""
-//                    })
-//            } else {
-//                Icon(Icons.Outlined.Search, "")
-//            }
-//        },
-//        trailingIcon = {
-//            if (searchQuery.isNotBlank()) {
-//                Icon(
-//                    Icons.Outlined.Close,
-//                    "",
-//                    modifier = Modifier.clickable {
-//                        searchActive = false
-//                        searchQuery = ""
-//                    })
-//            }
-//        },
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(
-//                vertical = 8.dp,
-//                horizontal = if (searchActive) {
-//                    0.dp
-//                } else {
-//                    16.dp
-//                }
-//            ),
-//        placeholder = {
-//            Text("Search for key")
-//        }
-//    ) {
-//        LazyColumn {
-//            items(filteredList) { securityKeyWithServices ->
-//                SecurityKeySearchResultCard(
-//                    securityKeyWithServices,
-//                    onClick = {
-//                        searchActive = false
-//                        navigateToItemUpdate(securityKeyWithServices.securityKey.id)
-//                    }
-//                )
-//            }
-//        }
-//    }
-//}

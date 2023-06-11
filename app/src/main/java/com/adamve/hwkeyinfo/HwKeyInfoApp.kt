@@ -37,7 +37,9 @@ fun HwKeyInfoNavHost(
                 navigateToSecurityKeysScreen = { navController.navigate(SecurityKeyListDestination.route) },
                 navigateToServiceScreen = { navController.navigate(ServiceListDestination.route) },
                 navigateToSecurityKey = { navController.navigate("${SecurityKeyEditDestination.route}/$it") },
+                navigateToSecurityKeyEntry = { navController.navigate(SecurityKeyEditDestination.addKeyRoute) },
                 navigateToService = { navController.navigate("${ServiceEditDestination.route}/$it") },
+                navigateToServiceEntry = { navController.navigate(ServiceEditDestination.addServiceRoute) }
             )
         }
 
@@ -45,7 +47,7 @@ fun HwKeyInfoNavHost(
             SecurityKeyListScreen(
                 navigateToItemEntry = { navController.navigate(SecurityKeyEditDestination.addKeyRoute) },
                 navigateToItemUpdate = { navController.navigate("${SecurityKeyEditDestination.route}/$it") },
-                navigateToServiceList = { navController.navigate(ServiceListDestination.route) }
+                navigateBack = { navController.popBackStack() }
             )
         }
 
@@ -74,7 +76,7 @@ fun HwKeyInfoNavHost(
             ServiceListScreen(
                 navigateToItemEntry = { navController.navigate(ServiceEditDestination.addServiceRoute) },
                 navigateToItemUpdate = { navController.navigate("${ServiceEditDestination.route}/$it") },
-                navigateToSecurityKeyList = { navController.navigate(SecurityKeyListDestination.route) }
+                navigateBack = { navController.popBackStack() }
             )
         }
 

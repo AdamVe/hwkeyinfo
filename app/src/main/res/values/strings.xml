@@ -51,4 +51,7 @@
     <string name="bottom_navigation_services_label">Services</string>
     <string name="bottom_navigation_keys_content_description">Keys</string>
     <string name="bottom_navigation_services_content_description">Services</string>
+
+    <string name="home_page_keys_row_title">Keys</string>
+    <string name="home_page_services_row_title">Services</string>
 </resources>
