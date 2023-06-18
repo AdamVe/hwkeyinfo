@@ -22,10 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
@@ -34,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -143,49 +139,18 @@ fun HomeScreenContent(
                     }
                 )
             else {
-                SearchBar(
-                    query = searchQuery,
+                HomeScreenSearchBar(
+                    searchQuery = searchQuery,
                     onQueryChange = { searchQuery = it },
                     onSearch = {
                         searchQuery = it
                         searchActive = false
                     },
-                    active = searchActive,
-                    onActiveChange = { searchActive = it },
-                    leadingIcon = {
-                        if (searchActive) {
-                            Icon(Icons.Outlined.ArrowBack, "",
-                                modifier = Modifier.clickable {
-                                    searchActive = false
-                                    searchQuery = ""
-                                })
-                        } else {
-                            Icon(Icons.Outlined.Search, "")
+                    onActiveChange = {
+                        searchActive = it
+                        if (!searchActive) {
+                            searchQuery = ""
                         }
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotBlank()) {
-                            Icon(
-                                Icons.Outlined.Close,
-                                "",
-                                modifier = Modifier.clickable {
-                                    searchActive = false
-                                    searchQuery = ""
-                                })
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            vertical = 8.dp,
-                            horizontal = if (searchActive) {
-                                0.dp
-                            } else {
-                                16.dp
-                            }
-                        ),
-                    placeholder = {
-                        Text("Search for key")
                     }
                 ) {
                     LazyColumn {
@@ -201,7 +166,6 @@ fun HomeScreenContent(
                     }
                 }
             }
-
         }
     ) { innerPadding ->
         HomeScreenBody(
