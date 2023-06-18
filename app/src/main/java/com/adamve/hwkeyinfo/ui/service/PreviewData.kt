@@ -1,5 +1,6 @@
 package com.adamve.hwkeyinfo.ui.service
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.keys
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.services
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.security_key.securityKeyComparator
@@ -336,7 +339,8 @@ fun SecurityKeyItem(
     }
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CreateServiceEditScreenPreview() {
     HwKeyInfoTheme {
@@ -347,12 +351,13 @@ fun CreateServiceEditScreenPreview() {
                     securityKeys = listOf(1, 200)
                 )
             ),
-            securityKeyListUiState = previewSecurityListUiState
+            securityKeyListUiState = SecurityKeyListUiState(keys)
         )
     }
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun EditServiceEditScreenPreview() {
     HwKeyInfoTheme {
@@ -363,22 +368,14 @@ fun EditServiceEditScreenPreview() {
                     securityKeys = listOf(100)
                 )
             ),
-            securityKeyListUiState = previewSecurityListUiState
+            securityKeyListUiState = SecurityKeyListUiState(keys)
         )
     }
 }
 
 val previewServiceUiState = ServiceUiState(
     details = ServiceDetails(
-        serviceName = "Some service",
-        serviceUser = "user@service.com"
-    )
-)
-
-val previewSecurityListUiState = SecurityKeyListUiState(
-    listOf(
-        SecurityKey(id = 1, name = "Key 1", type = "Key type 1"),
-        SecurityKey(id = 100, name = "Key 2", type = "Key type 100"),
-        SecurityKey(id = 200, name = "Key 3", type = "Key type 200"),
+        serviceName = services[0].serviceName,
+        serviceUser = services[0].serviceUser
     )
 )

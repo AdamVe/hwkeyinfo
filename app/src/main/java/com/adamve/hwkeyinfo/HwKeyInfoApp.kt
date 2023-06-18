@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.adamve.hwkeyinfo.ui.home.HomeScreen
+import com.adamve.hwkeyinfo.ui.home.HomeScreenDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditDestination
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyEditScreen
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListDestination
@@ -29,12 +31,23 @@ fun HwKeyInfoApp() {
 fun HwKeyInfoNavHost(
     navController: NavHostController,
 ) {
-    NavHost(navController = navController, startDestination = SecurityKeyListDestination.route) {
+    NavHost(navController = navController, startDestination = HomeScreenDestination.route) {
+        composable(route = HomeScreenDestination.route) {
+            HomeScreen(
+                navigateToSecurityKeysScreen = { navController.navigate(SecurityKeyListDestination.route) },
+                navigateToServiceScreen = { navController.navigate(ServiceListDestination.route) },
+                navigateToSecurityKey = { navController.navigate("${SecurityKeyEditDestination.route}/$it") },
+                navigateToSecurityKeyEntry = { navController.navigate(SecurityKeyEditDestination.addKeyRoute) },
+                navigateToService = { navController.navigate("${ServiceEditDestination.route}/$it") },
+                navigateToServiceEntry = { navController.navigate(ServiceEditDestination.addServiceRoute) }
+            )
+        }
+
         composable(route = SecurityKeyListDestination.route) {
             SecurityKeyListScreen(
                 navigateToItemEntry = { navController.navigate(SecurityKeyEditDestination.addKeyRoute) },
                 navigateToItemUpdate = { navController.navigate("${SecurityKeyEditDestination.route}/$it") },
-                navigateToServiceList = { navController.navigate(ServiceListDestination.route) }
+                navigateBack = { navController.popBackStack() }
             )
         }
 
@@ -63,7 +76,7 @@ fun HwKeyInfoNavHost(
             ServiceListScreen(
                 navigateToItemEntry = { navController.navigate(ServiceEditDestination.addServiceRoute) },
                 navigateToItemUpdate = { navController.navigate("${ServiceEditDestination.route}/$it") },
-                navigateToSecurityKeyList = { navController.navigate(SecurityKeyListDestination.route) }
+                navigateBack = { navController.popBackStack() }
             )
         }
 

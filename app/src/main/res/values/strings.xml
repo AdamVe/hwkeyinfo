@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">HW Key Info</string>
+    <string name="app_page_title_home">Home</string>
     <string name="app_page_title_key_list">Security keys</string>
     <string name="app_page_title_key_edit">Edit key information</string>
     <string name="app_page_title_key_add">Add new key</string>
@@ -50,4 +51,11 @@
     <string name="bottom_navigation_services_label">Services</string>
     <string name="bottom_navigation_keys_content_description">Keys</string>
     <string name="bottom_navigation_services_content_description">Services</string>
+
+    <string name="home_page_keys_row_title">Keys</string>
+    <string name="home_page_services_row_title">Services</string>
+
+    <string name="home_page_search_placeholder">Search key or service</string>
+    <string name="home_page_search_close">Close search</string>
+    <string name="home_page_search_back">Back from search</string>
 </resources>

@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.Service
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.keyWithServices
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.services
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.service.serviceComparator
@@ -350,7 +352,7 @@ fun AddSecuritySecurityKeyScreenPreview() {
     HwKeyInfoTheme {
         SecurityKeyEditScreenContent(
             securityKeyUiState = previewSecurityKeyUiState.copy(isAddingNew = true),
-            serviceListUiState = previewServiceListUiState
+            serviceListUiState = ServiceListUiState(services)
         )
     }
 }
@@ -361,43 +363,16 @@ fun EditSecuritySecurityKeyScreenPreview() {
     HwKeyInfoTheme {
         SecurityKeyEditScreenContent(
             securityKeyUiState = previewSecurityKeyUiState.copy(isAddingNew = false),
-            serviceListUiState = previewServiceListUiState
+            serviceListUiState = ServiceListUiState(services)
         )
     }
 }
 
 val previewSecurityKeyUiState = SecurityKeyUiState(
     SecurityKeyDetails(
-        services = listOf(1, 2, 4, 5)
-    )
-)
-
-val previewServiceListUiState = ServiceListUiState(
-    listOf(
-        Service(
-            serviceId = 1,
-            serviceName = "Email service 1",
-            serviceUser = "user@email1.com"
-        ),
-        Service(
-            serviceId = 2,
-            serviceName = "Email 2",
-            serviceUser = "user@email2.com"
-        ),
-        Service(
-            serviceId = 3,
-            serviceName = "Local login / TOTP",
-            serviceUser = "Something"
-        ),
-        Service(
-            serviceId = 4,
-            serviceName = "Not enabled service",
-            serviceUser = "user"
-        ),
-        Service(
-            serviceId = 5,
-            serviceName = "Not enabled service",
-            serviceUser = "user"
-        ),
+        name = keyWithServices[0].securityKey.name,
+        description = keyWithServices[0].securityKey.description,
+        type = keyWithServices[0].securityKey.type,
+        services = keyWithServices[0].services.map { it.serviceId }
     )
 )
