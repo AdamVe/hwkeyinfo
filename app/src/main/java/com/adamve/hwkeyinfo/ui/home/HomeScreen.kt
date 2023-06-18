@@ -252,7 +252,7 @@ fun KeyRow(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.tertiaryContainer)
-                            .clickable { navigateToSecurityKeysScreen() }
+                            .clickable { navigateToSecurityKeyEntry() }
                     )
                 }
             }
