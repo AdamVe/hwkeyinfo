@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.keyWithServicesUiState
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
@@ -200,7 +201,7 @@ fun SecurityKeyEmptyListScreenBody(
 fun SecurityKeyListPreview() {
     HwKeyInfoTheme {
         SecurityKeyListScreenContent(
-            securityKeyListUiState = previewSecurityKeyListUiState,
+            securityKeyListUiState = keyWithServicesUiState,
         )
     }
 }
@@ -215,23 +216,3 @@ fun EmptySecurityKeyListPreview() {
         )
     }
 }
-
-
-val previewSecurityKeyListUiState = SecurityKeyListUiState(
-    itemList = listOf(
-        SecurityKeyWithServices(
-            SecurityKey(name = "Main key", type = "HW Key Type 1"),
-            listOf()
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Backup key", type = "HW Key Type 2"),
-            listOf()
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Work key", type = "HW Key Type 1"),
-            listOf()
-        )
-
-    )
-)
-

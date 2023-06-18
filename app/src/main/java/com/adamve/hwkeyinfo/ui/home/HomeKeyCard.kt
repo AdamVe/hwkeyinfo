@@ -95,7 +95,7 @@ fun HomeSecurityKeyCard(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeSecurityKeyCardContent(
     securityKeyWithServices: SecurityKeyWithServices,

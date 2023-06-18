@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
+import com.adamve.hwkeyinfo.preview.PreviewData
 import com.adamve.hwkeyinfo.ui.security_key.securityKeyComparator
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 
@@ -272,6 +273,6 @@ fun SecurityKeysSection(
 @Composable
 fun ServiceCardPreview() {
     HwKeyInfoTheme {
-        ServiceCard(serviceWithSecurityKeys = previewServicesWithSecurityKeys[0])
+        ServiceCard(serviceWithSecurityKeys = PreviewData.servicesWithKeysUiState.serviceList[0])
     }
 }

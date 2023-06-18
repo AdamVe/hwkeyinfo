@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,11 +23,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,15 +40,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamve.hwkeyinfo.R
-import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.SecurityKeyWithServices
-import com.adamve.hwkeyinfo.data.Service
 import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.keyWithServicesUiState
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.servicesWithKeysUiState
 import com.adamve.hwkeyinfo.ui.AppDestination
 import com.adamve.hwkeyinfo.ui.AppViewModelProvider
 import com.adamve.hwkeyinfo.ui.security_key.SecurityKeyListUiState
@@ -368,47 +364,14 @@ fun HomeScreenBody(
     }
 }
 
-@Composable
-fun EmptyHomeScreenBody(
-    modifier: Modifier = Modifier,
-    navigateToItemEntry: () -> Unit = {},
-) {
-    Column(
-        modifier = modifier
-            .fillMaxHeight(0.7f)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            stringResource(id = R.string.security_key_list_screen_add_label),
-            modifier = Modifier.padding(bottom = 16.dp),
-            style = MaterialTheme.typography.displaySmall,
-            textAlign = TextAlign.Center
-        )
-        FilledIconButton(
-            onClick = navigateToItemEntry,
-            shape = RoundedCornerShape(8.dp),
-            colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            )
-        ) {
-            Icon(
-                Icons.Filled.Add,
-                stringResource(id = R.string.security_key_action_add_content_description)
-            )
-        }
-    }
-}
-
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun HomeScreenPreview() {
     HwKeyInfoTheme {
         HomeScreenContent(
-            securityKeyListUiState = previewSecurityKeyListUiState,
-            serviceListUiState = previewServiceListUiState
+            securityKeyListUiState = keyWithServicesUiState,
+            serviceListUiState = servicesWithKeysUiState
         )
     }
 }
@@ -423,63 +386,3 @@ fun EmptyHomeScreenPreview() {
         )
     }
 }
-
-
-val homeScreenPreviewServices = listOf(
-    Service(serviceId = 0, serviceName = "Service 1", serviceUser = "username@service.com"),
-    Service(serviceId = 1, serviceName = "Service 2", serviceUser = "some_user@service2.org"),
-    Service(serviceId = 2, serviceName = "Long service 3 name", serviceUser = "Simple user name"),
-    Service(serviceId = 3, serviceName = "Service 4", serviceUser = "user"),
-)
-
-val previewServiceListUiState = ServiceListUiState(
-    serviceList = listOf(
-        ServiceWithSecurityKeys(
-            homeScreenPreviewServices[0],
-            emptyList()
-        ),
-        ServiceWithSecurityKeys(
-            homeScreenPreviewServices[1],
-            emptyList()
-        ),
-        ServiceWithSecurityKeys(
-            homeScreenPreviewServices[2],
-            emptyList()
-        ),
-        ServiceWithSecurityKeys(
-            homeScreenPreviewServices[3],
-            emptyList()
-        )
-    )
-)
-
-val previewSecurityKeyListUiState = SecurityKeyListUiState(
-    itemList = listOf(
-        SecurityKeyWithServices(
-            SecurityKey(name = "Main key", type = "HW Key Type 1"),
-            listOf(homeScreenPreviewServices[1], homeScreenPreviewServices[2])
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Backup key", type = "HW Key Type 2"),
-            listOf()
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Work key", type = "HW Key Type 1"),
-            listOf()
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Main key 2", type = "HW Key Type 1"),
-            listOf()
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Backup key 3", type = "HW Key Type 2"),
-            listOf()
-        ),
-        SecurityKeyWithServices(
-            SecurityKey(name = "Work key 5", type = "HW Key Type 1"),
-            listOf()
-        )
-
-
-    )
-)

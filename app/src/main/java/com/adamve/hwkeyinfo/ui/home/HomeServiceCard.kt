@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.adamve.hwkeyinfo.R
 import com.adamve.hwkeyinfo.data.SecurityKey
 import com.adamve.hwkeyinfo.data.ServiceWithSecurityKeys
+import com.adamve.hwkeyinfo.preview.PreviewData.Companion.servicesWithKeysUiState
 import com.adamve.hwkeyinfo.ui.theme.HwKeyInfoTheme
 
 @Composable
@@ -165,6 +165,6 @@ fun HomeSecurityKeysSection(
 @Composable
 fun HomeServiceCardPreview() {
     HwKeyInfoTheme {
-        HomeServiceCard(serviceWithSecurityKeys = previewServicesWithSecurityKeys[0])
+        HomeServiceCard(serviceWithSecurityKeys = servicesWithKeysUiState.serviceList[0])
     }
 }
