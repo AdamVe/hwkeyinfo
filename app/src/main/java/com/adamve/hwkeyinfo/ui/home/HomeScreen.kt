@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -348,20 +349,35 @@ fun HomeScreenBody(
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        KeyRow(
-            securityKeyWithServicesList = securityKeyWithServicesList,
-            navigateToSecurityKeysScreen = navigateToSecurityKeysScreen,
-            onKeyItemClick = onKeyItemClick,
-            navigateToSecurityKeyEntry = navigateToSecurityKeyEntry
-        )
-        ServiceRow(
-            serviceWithKeysList = serviceWithKeysList,
-            navigateToServiceScreen = navigateToServiceScreen,
-            onServiceItemClick = onServiceItemClick,
-            navigateToServiceEntry = navigateToServiceEntry
-        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f)
+                .padding(8.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = "App info", style = MaterialTheme.typography.titleLarge)
+                Text(text = "Security keys: 5", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Services: 3", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Recommendations: 0", style = MaterialTheme.typography.labelLarge)
+            }
+        }
+        Column {
+            KeyRow(
+                securityKeyWithServicesList = securityKeyWithServicesList,
+                navigateToSecurityKeysScreen = navigateToSecurityKeysScreen,
+                onKeyItemClick = onKeyItemClick,
+                navigateToSecurityKeyEntry = navigateToSecurityKeyEntry
+            )
+            ServiceRow(
+                serviceWithKeysList = serviceWithKeysList,
+                navigateToServiceScreen = navigateToServiceScreen,
+                onServiceItemClick = onServiceItemClick,
+                navigateToServiceEntry = navigateToServiceEntry
+            )
+        }
     }
 }
 
