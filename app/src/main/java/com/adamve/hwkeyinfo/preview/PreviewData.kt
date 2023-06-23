@@ -86,5 +86,24 @@ class PreviewData {
         val servicesWithKeysUiState = ServiceListUiState(
             serviceList = servicesWithKeys
         )
+
+        val keyWithoutDescription = keys[0]
+        val keyWithDescription = keys[1].copy(
+            description = "Key for main work tasks"
+        )
+        val keyWithoutType = keys[0].copy(
+            type = ""
+        )
+        val keyWithoutName = keys[0].copy(
+            name = ""
+        )
+
+        val previewSecurityKey = SecurityKey(
+            0,
+            "Private backup Key",
+            "HW Key Type",
+            "This is my main backup key and it is stored in bank X ref 123."
+        )
+
     }
 }
