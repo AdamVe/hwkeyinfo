@@ -318,9 +318,9 @@ fun ServiceRow(
             }
         } else {
             LazyRow(
-                Modifier
-                    .fillMaxWidth(),
-                contentPadding = PaddingValues(4.dp),
+                Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 state = listState
             ) {
                 items(serviceWithKeysList) {
